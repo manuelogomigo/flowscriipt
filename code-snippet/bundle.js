@@ -19,7 +19,7 @@
   (function() {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '.code-snippet/theme/prism-okaidia.min.css';
+    link.href = '/theme/prism-okaidia.min.css';
     document.head.appendChild(link);
   })();
   
