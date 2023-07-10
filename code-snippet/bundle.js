@@ -19,7 +19,7 @@
   (function() {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/themes/prism-okaidia.min.css';
+    link.href = 'https://cdn.jsdelivr.net/gh/manuelogomigo/flowscriipt@main/code-snippet/theme/prism-okaidia.min.css';
     document.head.appendChild(link);
   })();
   
