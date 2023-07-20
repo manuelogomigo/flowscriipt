@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
   
-      muteUnmuteButton.addEventListener("click", function () {
+      muteUnmuteButton?.addEventListener("click", function () {
         if (audioElement.muted) {
           audioElement.muted = false;
           if (muteIcon) {
