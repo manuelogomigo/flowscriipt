@@ -35,7 +35,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!isChildElement) {
           clickedElement.classList.add(copyClass);
   
-          // Rest of the copy to clipboard logic...
+          // Create a temporary textarea element
+        var tempTextarea = document.createElement('textarea');
+
+        // Set the value of the textarea to the text content of the target element
+        tempTextarea.value = copyText.textContent;
+
+        // Append the textarea to the document body
+        document.body.appendChild(tempTextarea);
+
+        // Select the contents of the textarea
+        tempTextarea.select();
+
+        // Copy the selected text to the clipboard
+        document.execCommand('copy');
+
+        // Remove the temporary textarea
+        document.body.removeChild(tempTextarea);
+
   
           // Remove the combo class from the trigger element after 1 second
           setTimeout(function () {

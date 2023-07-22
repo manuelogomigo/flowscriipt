@@ -1,3 +1,26 @@
+function getCurrentDateTime(element) {
+    const timeZone = element.getAttribute('ct-time-date') || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const dateOptions = {
+        timeZone,
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    };
+
+    function updateDateTime() {
+        const currentDate = new Date().toLocaleDateString([], dateOptions);
+
+        element.textContent = currentDate;
+    }
+
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+}
+
+const timeElements = document.querySelectorAll('[ct-time-date]');
+timeElements.forEach((element) => getCurrentDateTime(element));
+
 function getCurrentTime(element) {
     const timeZone = element.getAttribute('ct-time-zone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
     const mode = element.getAttribute('ct-time-mode') || '12hr';
@@ -19,5 +42,5 @@ function getCurrentTime(element) {
     setInterval(updateTime, 1000);
 }
 
-const elements = document.querySelectorAll('[ct-time-zone]');
-elements.forEach((element) => getCurrentTime(element));
+const zoneElements = document.querySelectorAll('[ct-time-zone]');
+zoneElements.forEach((element) => getCurrentTime(element));
