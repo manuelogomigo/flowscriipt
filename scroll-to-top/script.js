@@ -38,5 +38,5 @@
 
       // Set the default display value to 'block'
       if (!scrollToTopButton.hasAttribute('ct-scroll-to-top')) {
-        scrollToTopButton.style.display = 'block';
+        scrollToTopButton.style.display = 'inherit';
       }
