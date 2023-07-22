@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  var timeElements = document.querySelectorAll('[ct-post-time-update]');
+  var timeElements = document.querySelectorAll('[ct-post-time]');
 
   timeElements.forEach(function(element) {
     var postedTime = element.getAttribute('ct-post-time');
