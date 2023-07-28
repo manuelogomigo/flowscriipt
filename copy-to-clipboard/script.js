@@ -5,15 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
     copyTriggers.forEach(function (copyTrigger) {
       var triggerIndex = copyTrigger.getAttribute("ct-copy-element").replace("trigger", "");
-      var copyText;
-  
-      if (copyTrigger.children.length > 0) {
-        // For the case with a parent container and target element inside
-        copyText = copyTrigger.querySelector('[ct-copy-text="target' + triggerIndex + '"]');
-      } else {
-        // For the case with separate trigger and target elements
-        copyText = document.querySelector('[ct-copy-text="target' + triggerIndex + '"]');
-      }
+      var copyText = document.querySelector('[ct-copy-text="target' + triggerIndex + '"]');
   
       if (!copyText) {
         console.error("Target element not found for trigger: " + copyTrigger);
