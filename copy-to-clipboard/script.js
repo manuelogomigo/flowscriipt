@@ -1,3 +1,4 @@
+// JavaScript code
 document.addEventListener("DOMContentLoaded", function () {
     var copyTriggers = document.querySelectorAll('[ct-copy-element^="trigger"]');
     var copyTexts = document.querySelectorAll('[ct-copy-text^="target"]');
@@ -19,14 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
   
-      var copyClass = copyTrigger.getAttribute("ct-copy-class");
-  
       copyTrigger.addEventListener("click", function (event) {
-        // Use the trigger element itself as the target
-        var clickedElement = copyTrigger;
-  
-        clickedElement.classList.add(copyClass);
-  
         // Copy the text content of the target element to the clipboard
         var textToCopy = copyText.textContent;
         var tempElement = document.createElement("textarea");
@@ -38,10 +32,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.execCommand("copy");
         document.body.removeChild(tempElement);
   
-        // Remove the combo class from the trigger element after 1 second
-        setTimeout(function () {
-          clickedElement.classList.remove(copyClass);
-        }, 1000);
+        // Optional: Add the ct-copy-class to the trigger element if provided
+        var copyClass = copyTrigger.getAttribute("ct-copy-class");
+        if (copyClass) {
+          copyTrigger.classList.add(copyClass);
+  
+          // Remove the combo class from the trigger element after 1 second
+          setTimeout(function () {
+            copyTrigger.classList.remove(copyClass);
+          }, 1000);
+        }
       });
     });
   });
