@@ -1,4 +1,4 @@
-// JavaScript code
+// Updated JavaScript code to select target elements irrespective of other attributes
 document.addEventListener("DOMContentLoaded", function () {
     var copyTriggers = document.querySelectorAll('[ct-copy-element^="trigger"]');
     var copyTexts = document.querySelectorAll('[ct-copy-text^="target"]');
