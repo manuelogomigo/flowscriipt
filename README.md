@@ -8,8 +8,8 @@ To use Flowscriipt, simply copy the CDN links for the components you want to use
 
 ```html
 <script
-	async
-	src="https://cdn.jsdelivr.net/gh/manuelogomigo/flowscriipt/scroll-progress/script.js"
+  async
+  src="https://cdn.jsdelivr.net/gh/manuelogomigo/flowscriipt/scroll-progress/script.js"
 ></script>
 ```
 
