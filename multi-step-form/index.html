@@ -11,16 +11,25 @@
 <body>
     <div class="container">
         <form id="multi-step-form" ct-form-mode="multi-step">
-            <div class="step" ct-form-item="step">
-                <label for="name">What's your company called?</label>
-                <input type="text" id="name" name="name" required />
-                <br />
+            <div class="step" ct-form-card ct-form-item="step" ct-form-display="flex">
+                <h1>TESTING MULTIFORM</h1>
+
                 <div class="buttons">
                     <button type="button" class="next-button" ct-form-button="next">Next</button>
                 </div>
             </div>
 
-            <div class="step" ct-form-item="step">
+            <div class="step" ct-form-item="step" ct-form-display="flex">
+                <label for="name">What's your company called?</label>
+                <input type="text" id="name" name="name" required />
+                <br />
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+            </div>
+
+            <div class="step" ct-form-item="step" ct-form-display="flex">
                 <label for="address">Address:</label>
                 <input type="text" id="address" name="address" required />
                 <br />
@@ -33,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="step" ct-form-item="step">
+            <div class="step" ct-form-item="step" ct-form-display="flex">
                 <label for="credit-card">Credit Card:</label>
                 <input type="text" id="credit-card" name="credit-card" required />
                 <br />
@@ -41,11 +50,15 @@
                 <input type="text" id="expiration-date" name="expiration-date" required />
                 <br />
                 <div class="buttons">
-                    <button type="button" class="prev-button">Previous</button>
-                    <button type="submit">Submit</button>
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
                 </div>
             </div>
         </form>
+
+        <div class="progress-bar" ct-form-progress="line">
+            <div class="progress-bar-fill"></div>
+        </div>
     </div>
 </body>
 
