@@ -1,3 +1,30 @@
+/* eslint-disable no-inner-declarations */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
+/**
+ * Initializes a multi-step form and provides functionality to navigate through the form steps, validate inputs, update progress, and show/hide elements based on user input.
+ *
+ * @param {string} ct-form-mode - The attribute value used to identify the multi-step form.
+ * @param {string} ct-form-item - The attribute value used to identify each step in the form.
+ * @param {string} ct-form-progress - The attribute value used to identify the progress bar and its elements.
+ * @param {string} ct-form-percent - The attribute value used to identify the current percentage display.
+ * @param {string} ct-form-button - The attribute value used to identify the "Next" and "Previous" buttons.
+ * @param {string} ct-form-card - The attribute value used to identify card-style steps in the form.
+ * @param {string} ct-form-display - The attribute value used to set the initial display style for each step.
+ * @param {string} ct-form-number - The attribute value used to identify the current and total step number displays.
+ * @param {string} ct-form-checkbox - The attribute value used to specify the required number of checkboxes in a step.
+ * @param {string} ct-form-radio - The attribute value used to enable automatic progression to the next step when radio inputs are clicked.
+ * @param {string} ct-form-delay - The attribute value used to specify the delay time for automatic radio progression.
+ * @param {string} ct-form-check - The attribute value used to associate checkboxes and hide/show elements based on the number of checked checkboxes.
+ * @param {string} ct-form-hide - The attribute value used to identify elements to be hidden/shown based on checkbox selection.
+ * @param {string} ct-form-toggleClass - The attribute value used to toggle a class on labels based on radio/checkbox input selection.
+ * @param {string} ct-form-field - The attribute value used to associate form fields with input elements and display the combined value of associated inputs.
+ * @param {string} ct-form-edit-step - The attribute value used to navigate to a specific step in the form.
+ *
+ * @returns {void}
+ */
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector('[ct-form-mode="multi-step"]');
   const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
@@ -35,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click event listener to the form
   form.addEventListener("click", function (event) {
-    let target = event.target;
+    let { target } = event;
 
     // If the clicked element is inside a link, get the closest link element
     if (

@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="./script.js" defer></script>
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>Multi-Step Form Test</title>
+</head>
+
+<body>
+    <div class="container">
+        <form id="multi-step-form" ct-form-mode="multi-step">
+            <div class="step" ct-form-item="step">
+                <label for="name">What's your company called?</label>
+                <input type="text" id="name" name="name" required />
+                <br />
+                <div class="buttons">
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+            </div>
+
+            <div class="step" ct-form-item="step">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required />
+                <br />
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" required />
+                <br />
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+            </div>
+
+            <div class="step" ct-form-item="step">
+                <label for="credit-card">Credit Card:</label>
+                <input type="text" id="credit-card" name="credit-card" required />
+                <br />
+                <label for="expiration-date">Expiration Date:</label>
+                <input type="text" id="expiration-date" name="expiration-date" required />
+                <br />
+                <div class="buttons">
+                    <button type="button" class="prev-button">Previous</button>
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
