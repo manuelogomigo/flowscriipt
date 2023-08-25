@@ -4,79 +4,77 @@
 /* eslint-disable no-unused-vars */
 
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('[ct-form-mode="multi-step"]');
-    const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
-    const totalSteps = steps.filter((step) => !step.hasAttribute("ct-form-card"))
-      .length;
-    const progressWrapper = document.querySelector(
-      '[ct-form-progress="wrapper"]'
-    );
-    const progressLine = document.querySelector('[ct-form-progress="line"]');
-    const percentDisplay = document.querySelector('[ct-form-percent="current"]');
-    let radioAutoEnabled = false;
-    let radioDelay = 1000; // Default delay in milliseconds
-  
-    // Hide all steps except the first one
-    steps.forEach(function (step, index) {
-      if (index !== 0) {
-        step.style.display = "none";
-      } else {
-        // If ct-form-display attribute is present, set the initial display style
-        const displayAttr = step.getAttribute("ct-form-display");
-        if (displayAttr) {
-          step.style.display = displayAttr;
-        }
+  const form = document.querySelector('[ct-form-mode="multi-step"]');
+  const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
+  const totalSteps = steps.filter((step) => !step.hasAttribute("ct-form-card"))
+    .length;
+  const progressWrapper = document.querySelector(
+    '[ct-form-progress="wrapper"]'
+  );
+  const progressLine = document.querySelector('[ct-form-progress="line"]');
+  const percentDisplay = document.querySelector('[ct-form-percent="current"]');
+  let radioAutoEnabled = false;
+  let radioDelay = 1000; // Default delay in milliseconds
+
+  // Hide all steps except the first one
+  steps.forEach(function (step, index) {
+    if (index !== 0) {
+      step.style.display = "none";
+    } else {
+      // If ct-form-display attribute is present, set the initial display style
+      const displayAttr = step.getAttribute("ct-form-display");
+      if (displayAttr) {
+        step.style.display = displayAttr;
       }
+    }
+  });
+
+  const totalNumberDisplay = document.querySelector('[ct-form-number="total"]');
+  const currentNumberDisplay = document.querySelector(
+    '[ct-form-number="current"]'
+  );
+  updateStepNumber(1); // Set the initial current step number
+  updateProgressLine(0); // Set the initial progress line width
+  updatePercentDisplay(0); // Set the initial current percentage
+
+  // Add click event listener to the form
+  form.addEventListener("click", function (event) {
+    let target = event.target;
+
+    // Scroll to the top
+    if (
+      target.matches('button[ct-form-button="next"]') ||
+      target.matches('a[ct-form-button="next"]')
+    ) {
+      event.preventDefault();
+      const currentStep = target.closest('[ct-form-item="step"]');
+      const nextStep = currentStep.nextElementSibling;
+
+      if (validateStep(currentStep)) {
+        showNextStep(target, currentStep, nextStep);
+        handleRadioAutoProgress(nextStep);
+        scrollToTopOfForm(); // Scroll to the top of the form
+      }
+    } else if (
+      target.matches('button[ct-form-button="prev"]') ||
+      target.matches('a[ct-form-button="prev"]')
+    ) {
+      event.preventDefault();
+      const currentStep = target.closest('[ct-form-item="step"]');
+      const prevStep = currentStep.previousElementSibling;
+
+      showPrevStep(target, currentStep, prevStep);
+      scrollToTopOfForm(); // Scroll to the top of the form
+    }
+  });
+
+  // Function to scroll to the top of the form
+  function scrollToTopOfForm() {
+    window.scrollTo({
+      top: form.getBoundingClientRect().top + window.scrollY,
+      behavior: "smooth"
     });
-  
-    const totalNumberDisplay = document.querySelector('[ct-form-number="total"]');
-    const currentNumberDisplay = document.querySelector(
-      '[ct-form-number="current"]'
-    );
-    updateStepNumber(1); // Set the initial current step number
-    updateProgressLine(0); // Set the initial progress line width
-    updatePercentDisplay(0); // Set the initial current percentage
-  
-    // Add click event listener to the form
-    form.addEventListener("click", function (event) {
-      let target = event.target;
-  
-      // If the clicked element is inside a link, get the closest link element
-      if (
-        target.tagName !== "BUTTON" &&
-        target.closest('a[ct-form-button="next"]')
-      ) {
-        target = target.closest('a[ct-form-button="next"]');
-      } else if (
-        target.tagName !== "BUTTON" &&
-        target.closest('a[ct-form-button="prev"]')
-      ) {
-        target = target.closest('a[ct-form-button="prev"]');
-      }
-  
-      if (
-        target.matches('button[ct-form-button="next"]') ||
-        target.matches('a[ct-form-button="next"]')
-      ) {
-        event.preventDefault();
-        const currentStep = target.closest('[ct-form-item="step"]');
-        const nextStep = currentStep.nextElementSibling;
-  
-        if (validateStep(currentStep)) {
-          showNextStep(target, currentStep, nextStep);
-          handleRadioAutoProgress(nextStep);
-        }
-      } else if (
-        target.matches('button[ct-form-button="prev"]') ||
-        target.matches('a[ct-form-button="prev"]')
-      ) {
-        event.preventDefault();
-        const currentStep = target.closest('[ct-form-item="step"]');
-        const prevStep = currentStep.previousElementSibling;
-  
-        showPrevStep(target, currentStep, prevStep);
-      }
-    });
+  }
   
     // Function to show the next step with smooth transition
     function showNextStep(button, currentStep, nextStep) {
