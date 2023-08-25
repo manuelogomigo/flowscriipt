@@ -1,3 +1,8 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-inner-declarations */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector('[ct-form-mode="multi-step"]');
   const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
