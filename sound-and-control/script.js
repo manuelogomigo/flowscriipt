@@ -25,29 +25,23 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const playPauseButton = wrapper.querySelector(
-        '[ct-audio-trigger="click"]'
+        '[ct-audio-trigger="click"]',
       );
       const muteUnmuteButton = wrapper.querySelector("[ct-audio-mute]");
 
       const pauseIcon = wrapper.querySelector(
-        '[ct-audio-control="pause-icon"]'
+        '[ct-audio-control="pause-icon"]',
       );
-      const playIcon = wrapper.querySelector(
-        '[ct-audio-control="play-icon"]'
-      );
-      const muteIcon = wrapper.querySelector(
-        '[ct-audio-control="mute-icon"]'
-      );
+      const playIcon = wrapper.querySelector('[ct-audio-control="play-icon"]');
+      const muteIcon = wrapper.querySelector('[ct-audio-control="mute-icon"]');
       const unmuteIcon = wrapper.querySelector(
-        '[ct-audio-control="unmute-icon"]'
+        '[ct-audio-control="unmute-icon"]',
       );
 
       const progressWrapper = wrapper.querySelector(
-        '[ct-audio-progress="wrapper"]'
+        '[ct-audio-progress="wrapper"]',
       );
-      const progressLine = wrapper.querySelector(
-        '[ct-audio-progress="line"]'
-      );
+      const progressLine = wrapper.querySelector('[ct-audio-progress="line"]');
 
       const timeTotal = wrapper.querySelector('[ct-audio-time="total"]');
       const timeCurrent = wrapper.querySelector('[ct-audio-time="current"]');
@@ -147,14 +141,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Slider volume functionality
       const volumeWrapper = wrapper.querySelector(
-        '[ct-audio-volume="wrapper"]'
+        '[ct-audio-volume="wrapper"]',
       );
       const volumeTrack = wrapper.querySelector('[ct-audio-volume="track"]');
-      const volumeHandle = wrapper.querySelector(
-        '[ct-audio-volume="handle"]'
-      );
+      const volumeHandle = wrapper.querySelector('[ct-audio-volume="handle"]');
       const volumeValueElement = wrapper.querySelector(
-        '[ct-audio-volume="value"]'
+        '[ct-audio-volume="value"]',
       );
 
       // Set the initial value
@@ -177,14 +169,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const containerRect = volumeWrapper.getBoundingClientRect();
         const containerWidth = volumeWrapper.clientWidth;
         const handleWidth = volumeHandle ? volumeHandle.clientWidth : 0;
-        let newPosition =
-          event.clientX - containerRect.left - handleWidth / 2;
+        let newPosition = event.clientX - containerRect.left - handleWidth / 2;
         newPosition = Math.max(
           0,
-          Math.min(newPosition, containerWidth - handleWidth)
+          Math.min(newPosition, containerWidth - handleWidth),
         );
         volumeValue = Math.round(
-          (newPosition / (containerWidth - handleWidth)) * 100
+          (newPosition / (containerWidth - handleWidth)) * 100,
         );
         updateSliderPositionAndValue();
         // Update audio volume
@@ -210,10 +201,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         newPosition = Math.max(
           0,
-          Math.min(newPosition, containerWidth - handleWidth)
+          Math.min(newPosition, containerWidth - handleWidth),
         );
         volumeValue = Math.round(
-          (newPosition / (containerWidth - handleWidth)) * 100
+          (newPosition / (containerWidth - handleWidth)) * 100,
         );
         updateSliderPositionAndValue();
         // Update audio volume
@@ -288,8 +279,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function formatTime(time) {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes
+    return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      .padStart(2, "0")}`;
   }
 });

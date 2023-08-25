@@ -1,9 +1,9 @@
-document.addEventListener("DOMContentLoaded", function() {
-  var timeElements = document.querySelectorAll('[ct-post-time-update]');
+document.addEventListener("DOMContentLoaded", function () {
+  var timeElements = document.querySelectorAll("[ct-post-time-update]");
 
-  timeElements.forEach(function(element) {
-    var postedTime = element.getAttribute('ct-post-time');
-    var postedDate = new Date(postedTime.replace(/-/g, '/')); // Convert '-' to '/' for wider date format support
+  timeElements.forEach(function (element) {
+    var postedTime = element.getAttribute("ct-post-time");
+    var postedDate = new Date(postedTime.replace(/-/g, "/")); // Convert '-' to '/' for wider date format support
     var currentDate = new Date();
 
     var timeDifference = Math.floor((currentDate - postedDate) / 1000); // in seconds
