@@ -41,7 +41,19 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("click", function (event) {
     let target = event.target;
 
-    // Scroll to the top
+    // If the clicked element is inside a link, get the closest link element
+    if (
+      target.tagName !== "BUTTON" &&
+      target.closest('a[ct-form-button="next"]')
+    ) {
+      target = target.closest('a[ct-form-button="next"]');
+    } else if (
+      target.tagName !== "BUTTON" &&
+      target.closest('a[ct-form-button="prev"]')
+    ) {
+      target = target.closest('a[ct-form-button="prev"]');
+    }
+
     if (
       target.matches('button[ct-form-button="next"]') ||
       target.matches('a[ct-form-button="next"]')
@@ -626,3 +638,4 @@ document.addEventListener("DOMContentLoaded", function () {
     handleRadioAutoProgress(currentStep);
   }
 });
+
