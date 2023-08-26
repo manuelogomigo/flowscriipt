@@ -41,7 +41,7 @@
  */
 // @ts-check
 
-class MultiStepForm {
+export class MultiStepForm {
   constructor(form = null, options = {}) {
     let radioAutoEnabled = false;
     let radioDelay = 1000; // Default delay in milliseconds
@@ -73,28 +73,27 @@ class MultiStepForm {
   }
 
   init() {
-    const form = this.form.bind(this);
-    const steps = this.steps.bind(this);
-    const hideSteps = this.hideSteps.bind(this);
-    const updateStepNumber = this.updateStepNumber.bind(this);
-    const updateProgressLine = this.updateProgressLine.bind(this);
-    const updatePercentDisplay = this.updatePercentDisplay.bind(this);
-    const formEventListen = this.formEventListen.bind(this);
-    const validateStep = this.validateStep.bind(this);
-    const showNextStep = this.showNextStep.bind(this);
-    const showPrevStep = this.showPrevStep.bind(this);
-    const handleRadioAutoProgress = this.handleRadioAutoProgress.bind(this);
-    const scrollToTopOfForm = this.scrollToTopOfForm.bind(this);
-    const handleEditStepAttribute = this.handleEditStepAttribute.bind(this);
-    const getCurrentStep = this.getCurrentStep.bind(this);
-    const handleFormField = this.handleFormField.bind(this);
-    const handleLabelToggleClass = this.handleLabelToggleClass.bind(this);
-    const handleFormCheckAndHide = this.handleFormCheckAndHide.bind(this);
-    const updateNextButtonOpacityOnInterval =
-      this.updateNextButtonOpacityOnInterval.bind(this);
-    const updateNextButtonOpacity = this.updateNextButtonOpacity.bind(this);
-    const getStepNumber = this.getStepNumber.bind(this);
-    const totalSteps = this.totalSteps.bind(this);
+    const { form } = this;
+    const { steps } = this;
+    const { hideSteps } = this;
+    const { updateStepNumber } = this;
+    const { updateProgressLine } = this;
+    const { updatePercentDisplay } = this;
+    const { formEventListen } = this;
+    const { validateStep } = this;
+    const { showNextStep } = this;
+    const { showPrevStep } = this;
+    const { handleRadioAutoProgress } = this;
+    const { scrollToTopOfForm } = this;
+    const { handleEditStepAttribute } = this;
+    const { getCurrentStep } = this;
+    const { handleFormField } = this;
+    const { handleLabelToggleClass } = this;
+    const { handleFormCheckAndHide } = this;
+    const { updateNextButtonOpacityOnInterval } = this;
+    const { updateNextButtonOpacity } = this;
+    const { getStepNumber } = this;
+    const { totalSteps } = this;
 
     // Update the current step number display
     updateStepNumber(
@@ -342,12 +341,16 @@ class MultiStepForm {
   }
 
   // Update the opacity of the "Next" button based on step validation
-  updateNextButtonOpacity(step, validateStep = this.validateStep) {
+  updateNextButtonOpacity(step) {
     const nextButton = step.querySelector('[ct-form-button="next"]');
-    if (validateStep(step)) {
+
+    // Use the following code instead if you want to disable the button instead of changing the opacity
+    if (this.validateStep(step) === true) {
       nextButton.style.opacity = 1;
+      nextButton.disabled = false;
     } else {
       nextButton.style.opacity = 0.5;
+      nextButton.disabled = true;
     }
   }
 
@@ -797,5 +800,3 @@ class MultiStepForm {
     });
   }
 }
-
-export default MultiStepForm;
