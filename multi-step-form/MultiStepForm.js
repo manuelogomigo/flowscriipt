@@ -1,3 +1,44 @@
+/**
+ * Class representing a MultiStepForm.
+ *
+ * @class
+ * @property {HTMLElement} form - The HTML form element.
+ * @property {Array<HTMLElement>} steps - An array of HTML elements representing the steps of the form.
+ * @property {HTMLElement} progressWrapper - The HTML element that wraps the progress indicators.
+ * @property {HTMLElement} progressLine - The HTML element representing the progress line.
+ * @property {HTMLElement} percentDisplay - The HTML element displaying the current percentage.
+ * @property {HTMLElement} totalNumberDisplay - The HTML element displaying the total number of steps.
+ * @property {HTMLElement} currentNumberDisplay - The HTML element displaying the current step number.
+ * @property {number} totalSteps - The total number of steps in the form.
+ * @property {boolean} radioAutoEnabled - Flag indicating if automatic radio progression is enabled.
+ * @property {number} radioDelay - The delay in milliseconds for automatic radio progression.
+ *
+ * @method init - Initializes the form and sets up event listeners.
+ * @method hideSteps - Hides all steps except the first one.
+ * @method updateStepNumber - Updates the current step number display.
+ * @method updateProgressLine - Updates the progress line width.
+ * @method updatePercentDisplay - Updates the current percentage display.
+ * @method formEventListen - Handles form button click events.
+ * @method scrollToTopOfForm - Scrolls to the top of the form.
+ * @method validateStep - Validates the inputs in a step.
+ * @method isValidEmail - Validates an email format.
+ * @method validateCheckboxes - Validates checkboxes in a step.
+ * @method updateNextButtonOpacity - Updates the opacity of the "Next" button.
+ * @method updateNextButtonVisibility - Updates the visibility of the "Next" button.
+ * @method showNextStep - Shows the next step with a smooth transition.
+ * @method showPrevStep - Shows the previous step with a smooth transition.
+ * @method getStepNumber - Gets the step number of a given step element.
+ * @method isFirstStep - Checks if it's the first step.
+ * @method getCurrentStep - Gets the currently displayed step.
+ * @method updateNextButtonOpacityOnInterval - Updates the opacity of the "Next" button on an interval.
+ * @method handleRadioAutoProgress - Handles automatic progression to the next step when radio inputs are clicked.
+ * @method handleFormCheckAndHide - Handles the ct-form-check and ct-form-hide attributes.
+ * @method showHideElement - Shows or hides an associated element.
+ * @method handleLabelToggleClass - Handles the ct-form-toggleClass attribute for labels.
+ * @method handleFormField - Handles the ct-form-field attribute.
+ * @method setInitialRadioValue - Sets the initial value for radio inputs.
+ * @method handleEditStepAttribute - Handles the ct-form-edit-step attribute.
+ */
 // @ts-check
 
 class MultiStepForm {
@@ -33,6 +74,7 @@ class MultiStepForm {
 
   init() {
     const form = this.form.bind(this);
+    const steps = this.steps.bind(this);
     const hideSteps = this.hideSteps.bind(this);
     const updateStepNumber = this.updateStepNumber.bind(this);
     const updateProgressLine = this.updateProgressLine.bind(this);
@@ -42,6 +84,17 @@ class MultiStepForm {
     const showNextStep = this.showNextStep.bind(this);
     const showPrevStep = this.showPrevStep.bind(this);
     const handleRadioAutoProgress = this.handleRadioAutoProgress.bind(this);
+    const scrollToTopOfForm = this.scrollToTopOfForm.bind(this);
+    const handleEditStepAttribute = this.handleEditStepAttribute.bind(this);
+    const getCurrentStep = this.getCurrentStep.bind(this);
+    const handleFormField = this.handleFormField.bind(this);
+    const handleLabelToggleClass = this.handleLabelToggleClass.bind(this);
+    const handleFormCheckAndHide = this.handleFormCheckAndHide.bind(this);
+    const updateNextButtonOpacityOnInterval =
+      this.updateNextButtonOpacityOnInterval.bind(this);
+    const updateNextButtonOpacity = this.updateNextButtonOpacity.bind(this);
+    const getStepNumber = this.getStepNumber.bind(this);
+    const totalSteps = this.totalSteps.bind(this);
 
     // Update the current step number display
     updateStepNumber(
@@ -68,8 +121,70 @@ class MultiStepForm {
         showNextStep,
         showPrevStep,
         handleRadioAutoProgress,
+        scrollToTopOfForm,
       );
     });
+
+    // Update the opacity of the "Next" button on input change
+    form.addEventListener("input", function (event) {
+      const currentStep = event.target.closest('[ct-form-item="step"]');
+      updateNextButtonOpacity(currentStep);
+    });
+
+    // Validate the initial step on page load
+    const initialStep = steps[0];
+    updateNextButtonOpacity(initialStep);
+
+    // Set initial progress line width on page load
+    const firstStep = steps[0];
+    updateProgressLine(getStepNumber(firstStep) / totalSteps);
+    updatePercentDisplay(0); // Set the initial current percentage
+
+    // Prevent form submission on Enter key press and simulate "Next" button click
+    form.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+      }
+    });
+
+    // Loop through each step and handle ct-form-field
+    steps.forEach((step) => {
+      updateNextButtonOpacityOnInterval(step);
+    });
+
+    // Loop through each step and handle ct-form-check and ct-form-hide
+    steps.forEach((step) => {
+      handleFormCheckAndHide(step);
+    });
+
+    // Loop through each step and handle ct-form-toggleClass for labels
+    steps.forEach((step) => {
+      handleLabelToggleClass(step);
+    });
+
+    // Loop through each step and handle ct-form-field
+    steps.forEach((step) => {
+      handleFormField(step);
+    });
+
+    // Loop through each step and handle ct-form-edit-step
+    steps.forEach((step) => {
+      handleEditStepAttribute(step);
+    });
+
+    // Check if automatic radio progression is enabled for any step
+    steps.forEach((step) => {
+      const radioAutoAttr = step.getAttribute("ct-form-radio");
+      if (radioAutoAttr && radioAutoAttr.toLowerCase() === "auto") {
+        this.radioAutoEnabled = true;
+      }
+    });
+
+    // Handle automatic radio progression if enabled
+    if (this.radioAutoEnabled) {
+      const currentStep = getCurrentStep();
+      handleRadioAutoProgress(currentStep);
+    }
   }
 
   hideSteps(step, index) {
@@ -122,10 +237,11 @@ class MultiStepForm {
 
   formEventListen(
     event,
-    validateStep,
-    showNextStep,
-    showPrevStep,
-    handleRadioAutoProgress,
+    validateStep = this.validateStep,
+    showNextStep = this.showNextStep,
+    showPrevStep = this.showPrevStep,
+    handleRadioAutoProgress = this.handleRadioAutoProgress,
+    scrollToTopOfForm = this.scrollToTopOfForm,
   ) {
     let { target } = event;
 
@@ -153,6 +269,7 @@ class MultiStepForm {
       if (validateStep(currentStep)) {
         showNextStep(target, currentStep, nextStep);
         handleRadioAutoProgress(nextStep);
+        scrollToTopOfForm(); // Scroll to the top of the form
       }
     } else if (
       target.matches('button[ct-form-button="prev"]') ||
@@ -163,11 +280,24 @@ class MultiStepForm {
       const prevStep = currentStep.previousElementSibling;
 
       showPrevStep(target, currentStep, prevStep);
+      scrollToTopOfForm(); // Scroll to the top of the form
     }
   }
 
+  // Function to scroll to the top of the form
+  scrollToTopOfForm(form = this.form) {
+    window.scrollTo({
+      top: form.getBoundingClientRect().top + window.scrollY,
+      behavior: "smooth",
+    });
+  }
+
   // Validate the inputs in a step
-  validateStep(step, isValidEmail, validateCheckboxes) {
+  validateStep(
+    step,
+    isValidEmail = this.isValidEmail,
+    validateCheckboxes = this.validateCheckboxes,
+  ) {
     const inputs = Array.from(
       step.querySelectorAll("input[required], textarea[required]"),
     );
@@ -212,7 +342,7 @@ class MultiStepForm {
   }
 
   // Update the opacity of the "Next" button based on step validation
-  updateNextButtonOpacity(step, validateStep) {
+  updateNextButtonOpacity(step, validateStep = this.validateStep) {
     const nextButton = step.querySelector('[ct-form-button="next"]');
     if (validateStep(step)) {
       nextButton.style.opacity = 1;
@@ -222,7 +352,11 @@ class MultiStepForm {
   }
 
   // Update the visibility of the "Next" button on the last step
-  updateNextButtonVisibility(step, totalSteps, getStepNumber) {
+  updateNextButtonVisibility(
+    step,
+    totalSteps = this.totalSteps,
+    getStepNumber = this.getStepNumber,
+  ) {
     const nextButton = step.querySelector('[ct-form-button="next"]');
     if (getStepNumber(step) === totalSteps) {
       nextButton.style.display = "none";
@@ -236,13 +370,13 @@ class MultiStepForm {
     button,
     currentStep,
     nextStep,
-    totalSteps,
-    getStepNumber,
-    updateStepNumber,
-    updateNextButtonOpacity,
-    updateNextButtonVisibility,
-    updateProgressLine,
-    updatePercentDisplay,
+    totalSteps = this.totalSteps,
+    getStepNumber = this.getStepNumber,
+    updateStepNumber = this.updateStepNumber,
+    updateNextButtonOpacity = this.updateNextButtonOpacity,
+    updateNextButtonVisibility = this.updateNextButtonVisibility,
+    updateProgressLine = this.updateProgressLine,
+    updatePercentDisplay = this.updatePercentDisplay,
   ) {
     currentStep.style.transition = "opacity 0.3s ease";
     currentStep.style.opacity = 0;
@@ -275,13 +409,13 @@ class MultiStepForm {
   // Function to show the previous step with smooth transition
   showPrevStep(
     button,
-    getStepNumber,
-    totalSteps,
-    updateStepNumber,
-    updateNextButtonOpacity,
-    updateNextButtonVisibility,
-    updateProgressLine,
-    updatePercentDisplay,
+    getStepNumber = this.getStepNumber,
+    totalSteps = this.totalSteps,
+    updateStepNumber = this.updateStepNumber,
+    updateNextButtonOpacity = this.updateNextButtonOpacity,
+    updateNextButtonVisibility = this.updateNextButtonVisibility,
+    updateProgressLine = this.updateProgressLine,
+    updatePercentDisplay = this.updatePercentDisplay,
   ) {
     const currentStep = button.closest('[ct-form-item="step"]');
     const prevStep = currentStep.previousElementSibling;
@@ -315,7 +449,7 @@ class MultiStepForm {
   }
 
   // Get the step number of a given step element
-  getStepNumber(step, steps) {
+  getStepNumber(step, steps = this.steps) {
     const nonCardSteps = steps.filter(
       (step) => !step.hasAttribute("ct-form-card"),
     );
@@ -323,20 +457,26 @@ class MultiStepForm {
   }
 
   // Check if it's the first step
-  isFirstStep(getCurrentStep, getStepNumber) {
+  isFirstStep(
+    getCurrentStep = this.getCurrentStep,
+    getStepNumber = this.getStepNumber,
+  ) {
     const currentStep = getCurrentStep();
     return getStepNumber(currentStep) === 1;
   }
 
   // Get the currently displayed step
-  getCurrentStep(form) {
+  getCurrentStep(form = this.form) {
     return form.querySelector(
       '[ct-form-item="step"]:not([style="display: none;"])',
     );
   }
 
   // Helper function to update the opacity of the "Next" button
-  updateNextButtonOpacityOnInterval(step, updateNextButtonOpacity) {
+  updateNextButtonOpacityOnInterval(
+    step,
+    updateNextButtonOpacity = this.updateNextButtonOpacity,
+  ) {
     // Set an interval to periodically update the button opacity
     const updateInterval = 1000; // 1 second interval, you can adjust this as needed
     let updateTimer;
@@ -359,7 +499,7 @@ class MultiStepForm {
   }
 
   // Function to handle automatic progression to the next step when radio inputs are clicked
-  handleRadioAutoProgress(step, radioDelay) {
+  handleRadioAutoProgress(step, radioDelay = this.radioDelay) {
     const radioInputs = Array.from(
       step.querySelectorAll('input[type="radio"]'),
     );
@@ -390,7 +530,11 @@ class MultiStepForm {
   }
 
   // Function to handle the ct-form-check and ct-form-hide attributes with toggle
-  handleFormCheckAndHide(step, showHideElement, hideElement) {
+  handleFormCheckAndHide(
+    step,
+    showHideElement = this.showHideElement,
+    hideElement = this.hideElement,
+  ) {
     // const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
     const hideElements = Array.from(step.querySelectorAll("[ct-form-hide]"));
 
@@ -457,7 +601,7 @@ class MultiStepForm {
   }
 
   // Function to handle ct-form-toggleClass for labels
-  handleLabelToggleClass(step, form) {
+  handleLabelToggleClass(step, form = this.form) {
     const labels = Array.from(
       step.querySelectorAll("label[ct-form-toggleClass]"),
     );
@@ -502,7 +646,11 @@ class MultiStepForm {
   }
 
   // Function to handle the ct-form-field attribute
-  handleFormField(step, form, setInitialRadioValue) {
+  handleFormField(
+    step,
+    form = this.form,
+    setInitialRadioValue = this.setInitialRadioValue,
+  ) {
     const formFields = Array.from(step.querySelectorAll("[ct-form-field]"));
 
     // Add input event listeners to all elements with the ct-form-field attribute
@@ -603,7 +751,11 @@ class MultiStepForm {
   }
 
   // Function to handle the ct-form-edit-step attribute
-  handleEditStepAttribute(step, form, getStepNumber, showNextStep) {
+  handleEditStepAttribute(
+    step,
+    getStepNumber = this.getStepNumber,
+    showNextStep = this.showNextStep,
+  ) {
     const editStepElements = Array.from(
       step.querySelectorAll("[ct-form-edit-step]"),
     );
