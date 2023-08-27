@@ -1,8 +1,3 @@
-/* eslint-disable prefer-destructuring */
-/* eslint-disable no-inner-declarations */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-
 /**
  * Initializes a multi-step form and provides functionality to navigate through the form steps, validate inputs, update progress, and show/hide elements based on user input.
  *
