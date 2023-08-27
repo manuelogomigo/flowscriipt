@@ -219,8 +219,6 @@ export class MultiStepForm {
       }
     });
 
-    console.log(valid);
-
     return valid && this.validateCheckboxes(step);
   }
 
