@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //   // Add click event listener to the form
 //   form.addEventListener("click", function (event) {
-//     let { target } = event;
+//     let target = event.target;
 
 //     // If the clicked element is inside a link, get the closest link element
 //     if (
