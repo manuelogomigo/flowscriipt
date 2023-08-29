@@ -13,11 +13,21 @@ export class MultiStepForm {
     this.totalSteps = this.steps.filter(
       (step) => !step.hasAttribute("ct-form-card"),
     ).length;
-    this.progressWrapper = document.querySelector(
+    this.progressWrapper = this.form.querySelector(
       '[ct-form-progress="wrapper"]',
     );
-    this.progressLine = document.querySelector('[ct-form-progress="line"]');
-    this.percentDisplay = document.querySelector('[ct-form-percent="current"]');
+    this.progressLines = this.form.querySelectorAll(
+      '[ct-form-progress="line"]',
+    );
+    this.percentDisplays = this.form.querySelectorAll(
+      '[ct-form-percent="current"]',
+    );
+    this.currentNumberDisplays = this.form.querySelectorAll(
+      '[ct-form-number="current"]',
+    );
+    this.totalNumberDisplays = this.form.querySelectorAll(
+      '[ct-form-number="total"]',
+    );
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in milliseconds
 
@@ -50,33 +60,33 @@ export class MultiStepForm {
   }
 
   updateStepNumber(stepNumber) {
-    const currentNumberDisplay = document.querySelector(
-      '[ct-form-number="current"]',
-    );
-    const totalNumberDisplay = document.querySelector(
-      '[ct-form-number="total"]',
-    );
-    if (currentNumberDisplay) {
-      currentNumberDisplay.textContent = `${stepNumber}`;
+    if (this.currentNumberDisplays.length > 0) {
+      this.currentNumberDisplays.forEach((display) => {
+        display.textContent = `${stepNumber}`;
+      });
     }
-    if (totalNumberDisplay) {
-      totalNumberDisplay.textContent = `${this.totalSteps}`;
+    if (this.totalNumberDisplays.length > 0) {
+      this.totalNumberDisplays.forEach((display) => {
+        display.textContent = `${this.totalSteps}`;
+      });
     }
   }
 
   updateProgressLine(progress) {
-    if (this.progressLine) {
-      this.progressLine.style.transition = "width 1.2s ease";
-      this.progressLine.style.width = `${progress * 100}%`;
+    for (let i = 0; i < this.progressLines.length; i++) {
+      this.progressLines[i].style.transition = "width 1.2s ease";
+      this.progressLines[i].style.width = `${progress * 100}%`;
       setTimeout(() => {
-        this.progressLine.style.transition = "";
+        this.progressLines[i].style.transition = "";
       }, 300);
     }
   }
 
   updatePercentDisplay(percentage) {
-    if (this.percentDisplay) {
-      this.percentDisplay.textContent = `${Math.round(percentage)}%`;
+    if (this.percentDisplays) {
+      for (let i = 0; i < this.percentDisplays.length; i++) {
+        this.percentDisplays[i].textContent = `${Math.round(percentage)}%`;
+      }
     }
   }
 
