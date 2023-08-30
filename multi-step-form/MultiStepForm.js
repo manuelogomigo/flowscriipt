@@ -60,6 +60,9 @@ export class MultiStepForm {
     this.totalNumberDisplays = this.form.querySelectorAll(
       '[ct-form-number="total"]',
     );
+    this.resetEnabled = this.form.querySelector('[ct-form-rest="true"]')
+      ? true
+      : false;
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in milliseconds
 
@@ -719,9 +722,13 @@ export class MultiStepForm {
     if (submitButton) {
       // this.submitForm();
 
-      setTimeout(() => {
-        this.resetForm();
-      }, 1000);
+      if (this.resetEnabled) {
+        setTimeout(() => {
+          this.resetForm();
+        }, 1000);
+      } else {
+        return;
+      }
     }
   }
 
@@ -747,11 +754,5 @@ export class MultiStepForm {
     });
 
     this.showNextStep(lastStep, this.steps[0]);
-  }
-
-  handleFormSubmit(event) {
-    event.preventDefault();
-
-    this.resetForm();
   }
 }
