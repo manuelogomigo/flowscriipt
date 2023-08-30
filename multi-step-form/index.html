@@ -26,7 +26,7 @@
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
                 <label for="name">What's your company called?</label>
-                <input type="text" id="name" name="name" required ct-form-field="name" />
+                <input type="text" id="name" name="name" required ct-form-required="true" ct-form-field="name" />
                 <br />
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
@@ -43,10 +43,11 @@
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
                 <label for="address">Address:</label>
-                <input type="text" id="address" name="address" required ct-form-field="address" />
+                <input type="text" id="address" name="address" required ct-form-required="true"
+                    ct-form-field="address" />
                 <br />
                 <label for="phone">Phone:</label>
-                <input type="tel" id="phone" name="phone" required ct-form-field="phone" />
+                <input type="tel" id="phone" name="phone" required ct-form-required="true" ct-form-field="phone" />
                 <br />
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
@@ -63,15 +64,16 @@
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
                 <label for="credit-card">Credit Card:</label>
-                <input type="text" id="credit-card" name="credit-card" required ct-form-field="credit-card" />
+                <input type="text" id="credit-card" name="credit-card" required ct-form-required="true"
+                    ct-form-field="credit-card" />
                 <br />
                 <label for="expiration-date">Expiration Date:</label>
-                <input type="text" id="expiration-date" name="expiration-date" required
+                <input type="text" id="expiration-date" name="expiration-date" required ct-form-required="true"
                     ct-form-field="expiration-date" />
                 <br />
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                    <button type="button" class="next-button" ct-form-button="submit">Submit</button>
                 </div>
 
                 <div class="progress-bar" ct-form-progress="line">

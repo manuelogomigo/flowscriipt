@@ -7,9 +7,41 @@
 export class MultiStepForm {
   constructor() {
     this.form = document.querySelector('[ct-form-mode="multi-step"]');
+
+    if (!this.form) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "No form found with attribute 'ct-form-mode' set to 'multi-step'.",
+      );
+      return;
+    }
+
     this.steps = Array.from(
       this.form.querySelectorAll('[ct-form-item="step"]'),
     );
+
+    if (this.steps.length === 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "No form steps found with attribute 'ct-form-item' set to 'step'.",
+      );
+      return;
+    }
+
+    this.buttons = Array.from(
+      this.form.querySelectorAll(
+        '[ct-form-button="next"], [ct-form-button="prev"], [ct-form-button="submit"]',
+      ),
+    );
+
+    if (this.buttons.length === 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "No form buttons found with attribute 'ct-form-button' set to 'next' or 'prev' or 'submit'.",
+      );
+      return;
+    }
+
     this.totalSteps = this.steps.filter(
       (step) => !step.hasAttribute("ct-form-card"),
     ).length;
@@ -96,14 +128,21 @@ export class MultiStepForm {
       this.steps.forEach((step) => {
         if (step.contains(event.target)) {
           this.handleFormInput(step);
+          this.handleInvalidFields(step);
         }
       });
     });
     this.form.addEventListener("keydown", (event) =>
       this.handleFormKeyDown(event),
     );
-    this.form.addEventListener("change", (event) =>
-      this.handleFormChange(event),
+    this.form.addEventListener("change", (event) => {
+      this.handleFormChange(event), this.handleInvalidFields(event.target);
+    });
+    this.form.addEventListener("invalid", (event) =>
+      this.handleFormInvalid(event),
+    );
+    this.form.addEventListener("submit", (event) =>
+      this.handleFormSubmit(event),
     );
     window.addEventListener("DOMContentLoaded", () => this.handleFormLoad());
   }
@@ -127,6 +166,8 @@ export class MultiStepForm {
         const prevStep = currentStep.previousElementSibling;
         this.showPrevStep(currentStep, prevStep);
         this.scrollToTopOfForm();
+      } else if (buttonType === "submit") {
+        this.handleSubmitButton(target);
       }
     }
   }
@@ -135,13 +176,13 @@ export class MultiStepForm {
     const { target } = event;
     if (target.tagName === "SELECT") {
       const currentStep = target.closest('[ct-form-item="step"]');
-      this.updateNextButtonOpacity(currentStep);
+      this.updateNextButtonVisibility(currentStep);
     } else if (target.tagName === "INPUT") {
       const currentStep = target.closest('[ct-form-item="step"]');
-      this.updateNextButtonOpacity(currentStep);
+      this.updateNextButtonVisibility(currentStep);
     } else if (target.tagName === "TEXTAREA") {
       const currentStep = target.closest('[ct-form-item="step"]');
-      this.updateNextButtonOpacity(currentStep);
+      this.updateNextButtonVisibility(currentStep);
     }
   }
 
@@ -155,7 +196,7 @@ export class MultiStepForm {
       nextStep.style.opacity = 0;
 
       this.updateStepNumber(this.getStepNumber(nextStep));
-      this.updateNextButtonOpacity(nextStep);
+      // this.updateNextButtonOpacity(nextStep);
       this.updateNextButtonVisibility(nextStep);
 
       const progress = this.getStepNumber(nextStep) / this.totalSteps;
@@ -184,7 +225,7 @@ export class MultiStepForm {
       prevStep.style.opacity = 0;
 
       this.updateStepNumber(this.getStepNumber(prevStep));
-      this.updateNextButtonOpacity(prevStep);
+      // this.updateNextButtonOpacity(prevStep);
       this.updateNextButtonVisibility(prevStep);
 
       const progress = this.getStepNumber(prevStep) / this.totalSteps;
@@ -229,7 +270,11 @@ export class MultiStepForm {
       }
     });
 
-    return valid && this.validateCheckboxes(step);
+    return (
+      valid &&
+      this.validateCheckboxes(step) &&
+      this.validateRequiredFields(step)
+    );
   }
 
   isValidEmail(email) {
@@ -371,7 +416,7 @@ export class MultiStepForm {
   handleFormLoad() {
     // Validate the initial step on page load
     const initialStep = this.steps[0];
-    this.updateNextButtonOpacity(initialStep);
+    this.updateNextButtonVisibility(initialStep);
 
     // Set initial progress line width on page load
     const firstStep = this.steps[0];
@@ -424,21 +469,6 @@ export class MultiStepForm {
         setTimeout(() => {
           nextButton.click();
         }, this.autoProgressDelay);
-      }
-    }
-  }
-
-  updateNextButtonOpacity(step) {
-    const nextButton = step.querySelector('[ct-form-button="next"]');
-    if (nextButton) {
-      if (this.validateStep(step)) {
-        nextButton.style.opacity = 1;
-        nextButton.style.cursor = "pointer";
-        nextButton.disabled = false;
-      } else {
-        nextButton.style.opacity = 0.5;
-        nextButton.style.cursor = "default";
-        nextButton.disabled = true;
       }
     }
   }
@@ -596,10 +626,132 @@ export class MultiStepForm {
 
   updateNextButtonVisibility(step) {
     const nextButton = step.querySelector('[ct-form-button="next"]');
-    if (this.getStepNumber(step) === this.totalSteps) {
-      nextButton.style.display = "none";
-    } else {
-      nextButton.style.display = "inherit";
+    const submitButton = step.querySelector('[ct-form-button="submit"]');
+
+    if (nextButton) {
+      if (this.validateStep(step)) {
+        this.updateNextButtonOpacity(nextButton, true);
+      } else {
+        this.updateNextButtonOpacity(nextButton, false);
+      }
     }
+
+    if (submitButton) {
+      if (this.validateStep(step)) {
+        this.updateNextButtonOpacity(submitButton, true);
+      } else {
+        this.updateNextButtonOpacity(submitButton, false);
+      }
+    }
+  }
+
+  updateNextButtonOpacity(button, visibility) {
+    if (button) {
+      if (visibility) {
+        button.style.opacity = 1;
+        button.style.cursor = "pointer";
+        button.disabled = false;
+      } else {
+        button.style.opacity = 0.5;
+        button.style.cursor = "default";
+        button.disabled = true;
+      }
+
+      return;
+    }
+  }
+
+  validateRequiredFields(step) {
+    const requiredFields = Array.from(
+      step.querySelectorAll('[ct-form-required="true"]'),
+    );
+
+    if (requiredFields.length > 0) {
+      const invalidFields = requiredFields.filter((field) => {
+        if (field.tagName === "INPUT") {
+          return !field.value;
+        } else if (field.tagName === "SELECT") {
+          return !field.value;
+        } else if (field.tagName === "TEXTAREA") {
+          return !field.value;
+        } else if (field.tagName === "DIV") {
+          const input = field.querySelector("input");
+          if (input) {
+            return !input.value;
+          }
+        } else {
+          return;
+        }
+        return false;
+      });
+
+      if (invalidFields.length > 0) {
+        invalidFields.forEach((field) => {
+          field.classList.add("ct-form-invalid");
+        });
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  handleInvalidFields(step) {
+    const requiredFields = Array.from(
+      step.querySelectorAll('[ct-form-required="true"]'),
+    );
+
+    requiredFields.forEach((field) => {
+      const invalid = field.classList.contains("ct-form-invalid");
+
+      if (invalid) {
+        field.style.border = "1px solid #e74c3c";
+        field.style.boxShadow = "0 0 0 0.2rem rgba(231, 76, 60, 0.25)";
+      }
+
+      field.addEventListener("input", () => {
+        field.classList.remove("ct-form-invalid");
+      });
+    });
+  }
+
+  handleSubmitButton(submitButton) {
+    if (submitButton) {
+      // this.submitForm();
+
+      setTimeout(() => {
+        this.resetForm();
+      }, 1000);
+    }
+  }
+
+  resetForm() {
+    const lastStep = this.steps[this.steps.length - 1];
+
+    this.steps.forEach((step) => {
+      const inputs = Array.from(step.querySelectorAll("input"));
+      const textareas = Array.from(step.querySelectorAll("textarea"));
+      const selects = Array.from(step.querySelectorAll("select"));
+
+      inputs.forEach((input) => {
+        input.value = "";
+      });
+
+      textareas.forEach((textarea) => {
+        textarea.value = "";
+      });
+
+      selects.forEach((select) => {
+        select.value = "";
+      });
+    });
+
+    this.showNextStep(lastStep, this.steps[0]);
+  }
+
+  handleFormSubmit(event) {
+    event.preventDefault();
+
+    this.resetForm();
   }
 }
