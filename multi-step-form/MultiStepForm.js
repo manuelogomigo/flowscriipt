@@ -62,18 +62,34 @@ export class MultiStepForm {
     );
     this.resetEnabled =
       this.form.getAttribute("ct-form-reset") === "true" ? true : false;
+    this.errorEnabled =
+      this.form.getAttribute("ct-form-error") === "true" ? true : false;
+    this.errorMessages = this.form.querySelectorAll("[ct-form-error-message]");
+    this.submitRedirect = this.form.getAttribute("ct-form-redirect");
+
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in
+    this.validationErrorMessage = "Please fill out all required fields.";
+    this.errorColor = "#ff0000";
 
     this.initialize();
   }
 
   initialize() {
+    this.hideErrorMessages();
     this.hideStepsExceptFirst();
     this.setInitialStepNumber();
     this.updateProgressLine(0);
     this.updatePercentDisplay(0);
     this.addFormEventListeners();
+  }
+
+  hideErrorMessages() {
+    if (this.errorMessages) {
+      this.errorMessages.forEach((message) => {
+        message.style.display = "none";
+      });
+    }
   }
 
   hideStepsExceptFirst() {
@@ -130,7 +146,7 @@ export class MultiStepForm {
       this.steps.forEach((step) => {
         if (step.contains(event.target)) {
           this.handleFormInput(step);
-          this.handleInvalidFields(step);
+          this.handleInvalidInput(step, event.target);
         }
       });
     });
@@ -138,7 +154,7 @@ export class MultiStepForm {
       this.handleFormKeyDown(event),
     );
     this.form.addEventListener("change", (event) => {
-      this.handleFormChange(event), this.handleInvalidFields(event.target);
+      this.handleFormChange(event);
     });
     this.form.addEventListener("invalid", (event) =>
       this.handleFormInvalid(event),
@@ -267,6 +283,10 @@ export class MultiStepForm {
         if (!this.isValidEmail(input.value.trim())) {
           valid = false;
         }
+      } else if (input.type === "number") {
+        if (isNaN(input.value.trim())) {
+          valid = false;
+        }
       } else {
         if (input.value.trim() === "") {
           valid = false;
@@ -274,11 +294,20 @@ export class MultiStepForm {
       }
     });
 
-    return (
-      valid &&
-      this.validateCheckboxes(step) &&
-      this.validateRequiredFields(step)
-    );
+    valid = this.validateCheckboxes(step) && valid;
+
+    if (!valid) {
+      step.classList.add("ct-form-invalid");
+      setTimeout(() => {
+        step.classList.remove("ct-form-invalid");
+      }, 300);
+
+      if (this.errorEnabled) {
+        this.showError(step, "error", this.validationErrorMessage);
+      }
+    }
+
+    return valid;
   }
 
   isValidEmail(email) {
@@ -288,6 +317,7 @@ export class MultiStepForm {
 
   validateCheckboxes(step) {
     const checkboxCount = parseInt(step.getAttribute("ct-form-checkbox"), 10);
+
     if (isNaN(checkboxCount) || checkboxCount < 1) {
       return true; // No checkbox requirement specified, so return true
     }
@@ -295,9 +325,11 @@ export class MultiStepForm {
     const checkboxes = Array.from(
       step.querySelectorAll('input[type="checkbox"]'),
     );
+
     const checkedCount = checkboxes.filter(
       (checkbox) => checkbox.checked,
     ).length;
+
     return checkedCount >= checkboxCount;
   }
 
@@ -649,6 +681,39 @@ export class MultiStepForm {
     }
   }
 
+  showError(step, errorType, message) {
+    // const errorMessages = this.errorMessages.forEach(
+    //   (errorMessage) => errorMessage.closest("ct-form-step") === step,
+    // );
+
+    // const errorText = step.querySelector("[ct-form-errortext]");
+
+    if (this.errorMessages.length === 0) {
+      return;
+    }
+
+    this.errorMessages.forEach((errorMessage) => {
+      errorMessage.style.color = this.errorColor;
+      errorMessage.style.fontWeight = "bold";
+      errorMessage.style.transition = "color 0.3s ease";
+      errorMessage.style.display = "block";
+
+      if (errorType === "error") {
+        errorMessage.innerHTML = message;
+      } else if (errorType === "custom") {
+        errorMessage.innerHTML = errorMessage.getAttribute(
+          "ct-form-customErrorMessage",
+        );
+      }
+
+      setTimeout(() => {
+        errorMessage.style.color = "transparent";
+        errorMessage.style.transition = "color 0.3s ease";
+        errorMessage.style.display = "none";
+      }, 1000);
+    });
+  }
+
   updateNextButtonOpacity(button, visibility) {
     if (button) {
       if (visibility) {
@@ -665,58 +730,21 @@ export class MultiStepForm {
     }
   }
 
-  validateRequiredFields(step) {
-    const requiredFields = Array.from(
-      step.querySelectorAll('[ct-form-required="true"]'),
-    );
+  handleInvalidInput(step, input) {
+    // const errorMessage = input.getAttribute("ct-form-errorMessage");
+    const invalid = input.getAttribute("ct-form-invalid");
 
-    if (requiredFields.length > 0) {
-      const invalidFields = requiredFields.filter((field) => {
-        if (field.tagName === "INPUT") {
-          return !field.value;
-        } else if (field.tagName === "SELECT") {
-          return !field.value;
-        } else if (field.tagName === "TEXTAREA") {
-          return !field.value;
-        } else if (field.tagName === "DIV") {
-          const input = field.querySelector("input");
-          if (input) {
-            return !input.value;
-          }
-        } else {
-          return;
-        }
-        return false;
-      });
+    // if (errorMessage) {
+    //   this.showError(step, "custom");
+    // } else {
+    //   this.showError(step, "error", this.validationErrorMessage);
+    // }
 
-      if (invalidFields.length > 0) {
-        invalidFields.forEach((field) => {
-          field.classList.add("ct-form-invalid");
-        });
-        return false;
-      }
+    if (invalid) {
+      this.updateNextButtonOpacity(step, false);
+
+      invalid.style.border = `1px solid ${this.errorColor}`;
     }
-
-    return true;
-  }
-
-  handleInvalidFields(step) {
-    const requiredFields = Array.from(
-      step.querySelectorAll('[ct-form-required="true"]'),
-    );
-
-    requiredFields.forEach((field) => {
-      const invalid = field.classList.contains("ct-form-invalid");
-
-      if (invalid) {
-        field.style.border = "1px solid #e74c3c";
-        field.style.boxShadow = "0 0 0 0.2rem rgba(231, 76, 60, 0.25)";
-      }
-
-      field.addEventListener("input", () => {
-        field.classList.remove("ct-form-invalid");
-      });
-    });
   }
 
   handleSubmitButton(submitButton) {
@@ -753,6 +781,10 @@ export class MultiStepForm {
         select.value = "";
       });
     });
+
+    if (this.submitRedirect) {
+      window.location = this.submitRedirect;
+    }
 
     this.showNextStep(lastStep, this.steps[0]);
   }

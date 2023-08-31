@@ -54,6 +54,86 @@ input {
   font-family: "Muli", sans-serif;
 }
 
+select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-family: "Muli", sans-serif;
+  background-color: #fff; /* Set background color */
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+option {
+  height: auto;
+  font-size: 16px;
+  font-family: "Muli", sans-serif;
+  background-color: #fff; /* Set background color */
+  color: #000; /* Set text color */
+}
+
+.option-div {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-family: "Muli", sans-serif;
+  background-color: #fff; /* Set background color */
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+input:focus {
+  outline: none;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-direction: column;
+}
+.checkbox-label {
+  margin-left: 10px;
+}
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+.custom-checkbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.custom-checkbox .checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 12px;
+  height: 12px;
+  background-color: #2196f3;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.custom-checkbox input:checked ~ .checkmark {
+  transform: translate(-50%, -50%) scale(1);
+}
+
 label {
   color: #000;
   font-size: 1rem;
