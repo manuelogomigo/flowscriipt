@@ -66,6 +66,7 @@ export class MultiStepForm {
       this.form.getAttribute("ct-form-error") === "true" ? true : false;
     this.errorMessages = this.form.querySelectorAll("[ct-form-error-message]");
     this.submitRedirect = this.form.getAttribute("ct-form-redirect");
+    // this.checkboxDisplay = this.steps.querySelectorAll
 
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in
@@ -175,7 +176,9 @@ export class MultiStepForm {
         const currentStep = target.closest('[ct-form-item="step"]');
         const nextStep = currentStep.nextElementSibling;
         if (this.validateStep(currentStep)) {
-          this.showNextStep(currentStep, nextStep);
+          if (!currentStep.hasAttribute("ct-form-checkbox-display")) {
+            this.showNextStep(currentStep, nextStep);
+          }
           this.handleRadioAutoProgress(nextStep);
           this.scrollToTopOfForm();
         }
@@ -795,11 +798,11 @@ export class MultiStepForm {
   }
 
   setupConditionalDisplayLogic(step) {
-    const checkboxes = Array.from(
+    const checkboxesSteps = Array.from(
       step.querySelectorAll("[ct-form-checkbox-step]"),
     );
 
-    checkboxes.forEach((checkbox) => {
+    checkboxesSteps.forEach((checkbox) => {
       const checkboxValue = checkbox.getAttribute("ct-form-checkbox-step");
       const nextButton = step.querySelector('[ct-form-button="next"]');
 
