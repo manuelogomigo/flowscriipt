@@ -162,6 +162,7 @@ export class MultiStepForm {
     this.form.addEventListener("submit", (event) =>
       this.handleFormSubmit(event),
     );
+
     window.addEventListener("DOMContentLoaded", () => this.handleFormLoad());
   }
 
@@ -469,9 +470,9 @@ export class MultiStepForm {
     });
 
     // Loop through each step and handle ct-form-edit-step
-    this.steps.forEach((step) => {
-      this.handleEditStepAttribute(step);
-    });
+    // this.steps.forEach((step) => {
+    //   this.handleEditStepAttribute(step);
+    // });
 
     // Loop through each step and handle ct-form-check and ct-form-hide
     this.steps.forEach((step) => {
@@ -481,6 +482,10 @@ export class MultiStepForm {
     // Loop through each step and handle ct-form-toggleClass for labels
     this.steps.forEach((step) => {
       this.handleLabelToggleClass(step);
+    });
+
+    this.steps.forEach((step) => {
+      this.setupConditionalDisplayLogic(step);
     });
 
     // Set up automatic radio progression if enabled
@@ -532,44 +537,44 @@ export class MultiStepForm {
     });
   }
 
-  handleEditStepAttribute(step) {
-    const editStepElements = Array.from(
-      step.querySelectorAll("[ct-form-edit-step]"),
-    );
+  // handleEditStepAttribute(step) {
+  //   const editStepElements = Array.from(
+  //     step.querySelectorAll("[ct-form-edit-step]"),
+  //   );
 
-    editStepElements.forEach((editStepElement) => {
-      const targetStepNumber = parseInt(
-        editStepElement.getAttribute("ct-form-edit-step"),
-      );
+  //   editStepElements.forEach((editStepElement) => {
+  //     const targetStepNumber = parseInt(
+  //       editStepElement.getAttribute("ct-form-edit-step"),
+  //     );
 
-      editStepElement.addEventListener("click", () => {
-        if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
-          const currentStepNumber = this.getStepNumber(step);
-          const stepsToMove = targetStepNumber - currentStepNumber;
-          let targetStepElement = step;
+  //     editStepElement.addEventListener("click", () => {
+  //       if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
+  //         const currentStepNumber = this.getStepNumber(step);
+  //         const stepsToMove = targetStepNumber - currentStepNumber;
+  //         let targetStepElement = step;
 
-          if (stepsToMove !== 0) {
-            if (stepsToMove > 0) {
-              for (let i = 0; i < stepsToMove; i++) {
-                targetStepElement = targetStepElement.nextElementSibling;
-              }
-            } else {
-              for (let i = 0; i > stepsToMove; i--) {
-                targetStepElement = targetStepElement.previousElementSibling;
-              }
-            }
-          }
+  //         if (stepsToMove !== 0) {
+  //           if (stepsToMove > 0) {
+  //             for (let i = 0; i < stepsToMove; i++) {
+  //               targetStepElement = targetStepElement.nextElementSibling;
+  //             }
+  //           } else {
+  //             for (let i = 0; i > stepsToMove; i--) {
+  //               targetStepElement = targetStepElement.previousElementSibling;
+  //             }
+  //           }
+  //         }
 
-          if (targetStepElement) {
-            const nextButton = step.querySelector('[ct-form-button="next"]');
-            if (nextButton) {
-              this.showNextStep(nextButton, step, targetStepElement);
-            }
-          }
-        }
-      });
-    });
-  }
+  //         if (targetStepElement) {
+  //           const nextButton = step.querySelector('[ct-form-button="next"]');
+  //           if (nextButton) {
+  //             this.showNextStep(nextButton, step, targetStepElement);
+  //           }
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
 
   handleFormCheckAndHide(step) {
     const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
@@ -787,5 +792,35 @@ export class MultiStepForm {
     }
 
     this.showNextStep(lastStep, this.steps[0]);
+  }
+
+  setupConditionalDisplayLogic(step) {
+    const checkboxes = Array.from(
+      step.querySelectorAll("[ct-form-checkbox-step]"),
+    );
+
+    checkboxes.forEach((checkbox) => {
+      const checkboxValue = checkbox.getAttribute("ct-form-checkbox-step");
+      const nextButton = step.querySelector('[ct-form-button="next"]');
+
+      if (checkboxValue && nextButton) {
+        nextButton.addEventListener("click", () => {
+          if (checkbox.checked) {
+            const nextStep = this.getStep(checkboxValue);
+
+            this.showNextStep(step, nextStep);
+          } else {
+            return;
+          }
+        });
+      }
+    });
+  }
+
+  getStep(stepName) {
+    const step = this.steps.find((step) => {
+      return step.id === stepName ? step : null;
+    });
+    return step;
   }
 }

@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div class="step" ct-form-item="step" ct-form-display="flex">
+            <div class="step" id="step1" ct-form-item="step" ct-form-display="flex">
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <div class="step" ct-form-item="step" ct-form-display="flex">
+            <div class="step" id="step2" ct-form-item="step" ct-form-display="flex">
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="step" ct-form-item="step" ct-form-display="flex" ct-form-checkbox="1">
+            <div class="step" id="step3" ct-form-item="step" ct-form-checkbox="1">
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
@@ -78,19 +78,20 @@
                 <br />
                 <div class="checkbox-container">
                     <label class="custom-checkbox">
-                        <input type="checkbox">
+                        <input type="checkbox" ct-form-checkbox-step="step4">
                         <span class="checkmark"></span>
                         <span class="checkbox-label">Checkbox 1</span>
                     </label>
                     <br />
                     <label class="custom-checkbox">
-                        <input type="checkbox">
+                        <input type="checkbox" ct-form-checkbox-step="step5">
                         <span class="checkmark"></span>
                         <span class="checkbox-label">Checkbox 2</span>
                     </label>
                 </div>
                 <br />
-                <label for="item-select">Pick An Item:</label>
+
+                <!-- <label for="item-select">Pick An Item:</label>
                 <select id="item-select" name="item-select" required ct-form-required="true"
                     ct-form-field="item-select">
                     <div class="option-div">
@@ -99,7 +100,48 @@
                         <option value="item3">Item 3</option>
                     </div>
                 </select>
+                <br /> -->
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="step" id="step4" ct-form-item="step">
+                <div class="progress-number">
+                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
+                </div>
+
+                <label for="book-name">Book Name:</label>
+                <input type="text" id="book-name" name="book-name" required ct-form-required="true"
+                    ct-form-field="book-name" />
                 <br />
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="submit">Submit</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="step" id="step5" ct-form-item="step">
+                <div class="progress-number">
+                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
+                </div>
+
+                <label for="Game-name">Game Name:</label>
+                <input type="text" id="Game-name" name="Game-name" required ct-form-required="true"
+                    ct-form-field="Game-name" />
+                <br />
+
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
                     <button type="button" class="next-button" ct-form-button="submit">Submit</button>
