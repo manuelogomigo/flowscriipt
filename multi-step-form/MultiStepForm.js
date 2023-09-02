@@ -66,7 +66,7 @@ export class MultiStepForm {
       this.form.getAttribute("ct-form-error") === "true" ? true : false;
     this.errorMessages = this.form.querySelectorAll("[ct-form-error-message]");
     this.submitRedirect = this.form.getAttribute("ct-form-redirect");
-    // this.checkboxDisplay = this.steps.querySelectorAll
+    this.optionInputs = this.form.querySelectorAll("[ct-form-options-input]");
 
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in
@@ -467,6 +467,12 @@ export class MultiStepForm {
     this.changeCheckInterval = 1000; // Adjust interval as needed (in milliseconds)
     this.changeCheckTimer = null;
 
+    this.optionInputs.forEach((optionInput) => {
+      optionInput.addEventListener("change", () => {
+        this.handleOptionInput(optionInput);
+      });
+    });
+
     // Loop through each step and handle ct-form-field
     this.steps.forEach((step) => {
       this.handleFormField(step);
@@ -487,6 +493,7 @@ export class MultiStepForm {
       this.handleLabelToggleClass(step);
     });
 
+    // Loop through each step and handle ct-form-toggleClass for buttons
     this.steps.forEach((step) => {
       this.setupConditionalDisplayLogic(step);
     });
@@ -812,5 +819,37 @@ export class MultiStepForm {
       return step.id === stepName ? step : null;
     });
     return step;
+  }
+
+  handleOptionInput(input) {
+    const optionInput = input.getAttribute("ct-form-options-input");
+
+    if (optionInput && input.checked) {
+      const step = input.closest('[ct-form-item="step"]');
+
+      const nextStep = this.findNextStep(step);
+
+      if (nextStep) {
+        this.passValueToNextStep(nextStep, optionInput);
+      }
+    }
+  }
+
+  findNextStep(step) {
+    const nextStep = step.nextElementSibling;
+
+    if (nextStep) {
+      return nextStep;
+    } else {
+      return null;
+    }
+  }
+
+  passValueToNextStep(nextStep, optionInput) {
+    const optionLabel = nextStep.querySelector("[ct-form-option-label]");
+
+    if (optionLabel) {
+      optionLabel.textContent = optionInput;
+    }
   }
 }

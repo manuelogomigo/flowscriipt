@@ -42,6 +42,56 @@
                 </div>
             </div>
 
+            <div class="step" id="step7" ct-form-item="step" ct-form-display="flex">
+                <div class="progress-number">
+                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
+                </div>
+
+                <label>
+                    <input type="radio" name="option" value="option1" ct-form-options-input="Books">
+                    Option 1
+                </label>
+                <br />
+                <label>
+                    <input type="radio" name="option" value="option2" ct-form-options-input="Movies">
+                    Option 2
+                </label>
+                <br />
+                <label>
+                    <input type="radio" name="option" value="option3" ct-form-options-input="Games">
+                    Option 3
+                </label>
+                <br />
+
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="step" id="step8" ct-form-item="step">
+                <div class="progress-number">
+                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
+                </div>
+
+                <label for="option" ct-form-option-label>Option Name:</label>
+                <input type="text" id="option" name="option" ct-form-field="option" />
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
             <div class="step" id="step2" ct-form-item="step" ct-form-display="flex">
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
@@ -56,6 +106,7 @@
                 <label for="phone">Phone:</label>
                 <input type="tel" id="phone" name="phone" ct-form-required="true" ct-form-field="phone" />
                 <br />
+
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
                     <button type="button" class="next-button" ct-form-button="next">Next</button>
