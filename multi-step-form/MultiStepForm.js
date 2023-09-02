@@ -202,6 +202,10 @@ export class MultiStepForm {
     } else if (target.tagName === "INPUT") {
       const currentStep = target.closest('[ct-form-item="step"]');
       this.updateNextButtonVisibility(currentStep);
+
+      if (this.errorEnabled) {
+        this.showError(currentStep, "error", this.validationErrorMessage);
+      }
     } else if (target.tagName === "TEXTAREA") {
       const currentStep = target.closest('[ct-form-item="step"]');
       this.updateNextButtonVisibility(currentStep);
@@ -305,10 +309,6 @@ export class MultiStepForm {
       setTimeout(() => {
         step.classList.remove("ct-form-invalid");
       }, 300);
-
-      if (this.errorEnabled) {
-        this.showError(step, "error", this.validationErrorMessage);
-      }
     }
 
     return valid;
@@ -690,12 +690,6 @@ export class MultiStepForm {
   }
 
   showError(step, errorType, message) {
-    // const errorMessages = this.errorMessages.forEach(
-    //   (errorMessage) => errorMessage.closest("ct-form-step") === step,
-    // );
-
-    // const errorText = step.querySelector("[ct-form-errortext]");
-
     if (this.errorMessages.length === 0) {
       return;
     }
@@ -739,14 +733,7 @@ export class MultiStepForm {
   }
 
   handleInvalidInput(step, input) {
-    // const errorMessage = input.getAttribute("ct-form-errorMessage");
     const invalid = input.getAttribute("ct-form-invalid");
-
-    // if (errorMessage) {
-    //   this.showError(step, "custom");
-    // } else {
-    //   this.showError(step, "error", this.validationErrorMessage);
-    // }
 
     if (invalid) {
       this.updateNextButtonOpacity(step, false);

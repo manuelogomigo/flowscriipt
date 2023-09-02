@@ -26,9 +26,12 @@
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
+
                 <label for="name">What's your company called?</label>
-                <input type="text" id="name" name="name" required ct-form-required="true" ct-form-field="name" />
+                <input type="text" id="name" name="name" ct-form-field="name" />
+                <span ct-form-error-message></span>
                 <br />
+
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
                     <button type="button" class="next-button" ct-form-button="next">Next</button>
@@ -91,17 +94,6 @@
                 </div>
                 <br />
 
-                <!-- <label for="item-select">Pick An Item:</label>
-                <select id="item-select" name="item-select" required ct-form-required="true"
-                    ct-form-field="item-select">
-                    <div class="option-div">
-                        <option value="item1">Item 1</option>
-                        <option value="item2">Item 2</option>
-                        <option value="item3">Item 3</option>
-                    </div>
-                </select>
-                <br /> -->
-
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
                     <button type="button" class="next-button" ct-form-button="next">Next</button>
@@ -154,10 +146,6 @@
 
             <div class="progress-percentage">
                 <span ct-form-percent="current">0</span>
-            </div>
-
-            <div class="error-message">
-                <span ct-form-error-message>Error Message</span>
             </div>
         </form>
 
