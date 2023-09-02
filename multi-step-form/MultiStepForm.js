@@ -1,9 +1,142 @@
 /**
- * Shows or hides an element based on a unique value.
+ * Class representing a MultiStepForm.
+ * @class
  *
- * @param {string} uniqueValue - The unique value used to identify the element to be shown or hidden.
- * @returns {void} - None. The function only modifies the display of an element.
+ * This class represents a multi-step form. It provides functionality for handling form validation,
+ * step navigation, progress tracking, and more.
+ *
+ * @constructor
+ * Creates an instance of the MultiStepForm class.
+ *
+ * @method initialize
+ * Initializes the multi-step form by hiding error messages, hiding all steps except the first one,
+ * setting the initial step number, updating the progress line, and adding event listeners.
+ *
+ * @method hideErrorMessages
+ * Hides all error messages in the form.
+ *
+ * @method hideStepsExceptFirst
+ * Hides all steps in the form except the first one.
+ *
+ * @method setInitialStepNumber
+ * Sets the initial step number to 1.
+ *
+ * @method updateStepNumber
+ * Updates the step number display in the form.
+ *
+ * @method updateProgressLine
+ * Updates the progress line in the form based on the current step.
+ *
+ * @method updatePercentDisplay
+ * Updates the percentage display in the form based on the current step.
+ *
+ * @method addFormEventListeners
+ * Adds event listeners to the form for handling form interactions.
+ *
+ * @method handleFormClick
+ * Handles click events on the form, such as clicking on next, previous, or submit buttons.
+ *
+ * @method handleFormChange
+ * Handles change events on the form, such as selecting an option or entering input.
+ *
+ * @method showNextStep
+ * Shows the next step in the form and updates the progress line and step number.
+ *
+ * @method showPrevStep
+ * Shows the previous step in the form and updates the progress line and step number.
+ *
+ * @method scrollToTopOfForm
+ * Scrolls the page to the top of the form.
+ *
+ * @method validateStep
+ * Validates the current step in the form by checking if all required fields are filled out.
+ *
+ * @method isValidEmail
+ * Checks if an email address is valid.
+ *
+ * @method validateCheckboxes
+ * Validates the checkboxes in the current step by checking if the required number of checkboxes are checked.
+ *
+ * @method handleRadioAutoProgress
+ * Handles automatic progression to the next step when a radio input is selected.
+ *
+ * @method handleFormInput
+ * Handles input events on the form, such as updating form field values.
+ *
+ * @method updateFormFieldText
+ * Updates the text content of a form field based on the associated input values.
+ *
+ * @method handleInputBlur
+ * Handles blur events on form inputs, such as updating form field values after a delay.
+ *
+ * @method handleFormKeyDown
+ * Handles keydown events on the form, such as pressing the enter key to navigate to the next step.
+ *
+ * @method handleFormLoad
+ * Handles the form load event, such as initializing form field values and setting up automatic progression.
+ *
+ * @method handleFormField
+ * Handles form field events, such as updating form field values.
+ *
+ * @method handleFormCheckAndHide
+ * Handles form check and hide events, such as showing or hiding elements based on checkbox or radio input selection.
+ *
+ * @method handleLabelToggleClass
+ * Handles label toggle class events, such as adding or removing a class from a label based on input selection.
+ *
+ * @method getStepNumber
+ * Gets the step number of a given step in the form.
+ *
+ * @method updateNextButtonVisibility
+ * Updates the visibility of the next button in the form based on the current step's validation status.
+ *
+ * @method showError
+ * Shows an error message in the form.
+ *
+ * @method updateNextButtonOpacity
+ * Updates the opacity of a button in the form.
+ *
+ * @method handleSubmitButton
+ * Handles the submit button click event, such as submitting the form and resetting it if enabled.
+ *
+ * @method resetForm
+ * Resets the form by clearing all input values and optionally redirecting to a new page.
+ *
+ * @method setupConditionalDisplayLogic
+ * Sets up conditional display logic for the form, such as showing or hiding steps based on checkbox selection.
+ *
+ * @method getStep
+ * Gets a step element in the form based on its ID.
+ *
+ * @method handleOptionInput
+ * Handles option input events, such as passing a selected option value to the next step.
+ *
+ * @method findNextStep
+ * Finds the next step element in the form.
+ *
+ * @method passValueToNextStep
+ * Passes a value to the next step in the form.
+ *
+ * @property {string} ct-form-mode - Specifies the form mode, likely for multi-step form handling.
+ * @property {boolean} ct-form-reset - Indicates whether the form should be reset.
+ * @property {boolean} ct-form-error - Indicates whether form errors should be displayed.
+ * @property {string} ct-form-redirect - Specifies the URL to redirect to.
+ * @property {boolean} ct-form-card - Denotes a form step as a card.
+ * @property {boolean} ct-form-item - Marks an element as a form step.
+ * @property {string} ct-form-display - Specifies the display property for the step.
+ * @property {string} ct-form-number - Used to display the current step number and total steps.
+ * @property {string} ct-form-field - Identifies form fields within a step.
+ * @property {boolean} ct-form-error-message - Used to display error messages for form fields.
+ * @property {string} ct-form-button - Specifies the type of button (e.g., next, previous, submit) within a step.
+ * @property {string} ct-form-progress - Defines the progress bar style (e.g., line).
+ * @property {string} ct-form-progress-fill - Represents the progress bar fill.
+ * @property {string} ct-form-options-input - Provides options for radio inputs.
+ * @property {string} ct-form-option-label - Labels for radio input options.
+ * @property {boolean} ct-form-checkbox - Specifies a checkbox.
+ * @property {boolean} ct-form-checkbox-display - Indicates whether checkboxes should change the step displayed.
+ * @property {string} ct-form-checkbox-step - Specifies the step to display when a checkbox is selected.
  */
+
 export class MultiStepForm {
   constructor() {
     this.form = document.querySelector('[ct-form-mode="multi-step"]');
