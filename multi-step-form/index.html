@@ -12,7 +12,7 @@
 
 <body>
     <div class="container">
-        <form id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true" ct-form-error="true"
+        <form id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true"
             ct-form-redirect="https://github.com/">
             <div class="step" ct-form-card ct-form-item="step" ct-form-display="flex">
                 <h1>TESTING MULTIFORM</h1>
@@ -27,9 +27,12 @@
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
 
-                <label for="name">What's your company called?</label>
-                <input type="text" id="name" name="name" ct-form-field="name" />
-                <span ct-form-error-message></span>
+                <div class="input-control">
+                    <label for="name">What's your company called?</label>
+                    <input type="text" id="name" name="name" ct-form-field="name" required
+                        ct-form-requiredMessage="This is required" />
+                    <span ct-form-error></span>
+                </div>
                 <br />
 
                 <div class="buttons">

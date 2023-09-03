@@ -195,35 +195,21 @@ export class MultiStepForm {
     );
     this.resetEnabled =
       this.form.getAttribute("ct-form-reset") === "true" ? true : false;
-    this.errorEnabled =
-      this.form.getAttribute("ct-form-error") === "true" ? true : false;
-    this.errorMessages = this.form.querySelectorAll("[ct-form-error-message]");
     this.submitRedirect = this.form.getAttribute("ct-form-redirect");
     this.optionInputs = this.form.querySelectorAll("[ct-form-options-input]");
 
     this.radioAutoEnabled = false;
     this.radioDelay = 1000; // Default delay in
-    this.validationErrorMessage = "Please fill out all required fields.";
-    this.errorColor = "#ff0000";
 
     this.initialize();
   }
 
   initialize() {
-    this.hideErrorMessages();
     this.hideStepsExceptFirst();
     this.setInitialStepNumber();
     this.updateProgressLine(0);
     this.updatePercentDisplay(0);
     this.addFormEventListeners();
-  }
-
-  hideErrorMessages() {
-    if (this.errorMessages) {
-      this.errorMessages.forEach((message) => {
-        message.style.display = "none";
-      });
-    }
   }
 
   hideStepsExceptFirst() {
@@ -280,7 +266,6 @@ export class MultiStepForm {
       this.steps.forEach((step) => {
         if (step.contains(event.target)) {
           this.handleFormInput(step);
-          this.handleInvalidInput(step, event.target);
         }
       });
     });
@@ -308,13 +293,11 @@ export class MultiStepForm {
         event.preventDefault();
         const currentStep = target.closest('[ct-form-item="step"]');
         const nextStep = currentStep.nextElementSibling;
-        if (this.validateStep(currentStep)) {
-          if (!currentStep.hasAttribute("ct-form-checkbox-display")) {
-            this.showNextStep(currentStep, nextStep);
-          }
-          this.handleRadioAutoProgress(nextStep);
-          this.scrollToTopOfForm();
+        if (!currentStep.hasAttribute("ct-form-checkbox-display")) {
+          this.showNextStep(currentStep, nextStep);
         }
+        this.handleRadioAutoProgress(nextStep);
+        this.scrollToTopOfForm();
       } else if (buttonType === "prev") {
         event.preventDefault();
         const currentStep = target.closest('[ct-form-item="step"]');
@@ -335,10 +318,6 @@ export class MultiStepForm {
     } else if (target.tagName === "INPUT") {
       const currentStep = target.closest('[ct-form-item="step"]');
       this.updateNextButtonVisibility(currentStep);
-
-      if (this.errorEnabled) {
-        this.showError(currentStep, "error", this.validationErrorMessage);
-      }
     } else if (target.tagName === "TEXTAREA") {
       const currentStep = target.closest('[ct-form-item="step"]');
       this.updateNextButtonVisibility(currentStep);
@@ -413,36 +392,10 @@ export class MultiStepForm {
   }
 
   validateStep(step) {
-    const inputs = Array.from(
-      step.querySelectorAll("input[required],  textarea[required]"),
-    );
-
     let valid = true;
 
-    inputs.forEach((input) => {
-      if (input.type === "email") {
-        if (!this.isValidEmail(input.value.trim())) {
-          valid = false;
-        }
-      } else if (input.type === "number") {
-        if (isNaN(input.value.trim())) {
-          valid = false;
-        }
-      } else {
-        if (input.value.trim() === "") {
-          valid = false;
-        }
-      }
-    });
-
+    valid = this.validateInputs(step) && valid;
     valid = this.validateCheckboxes(step) && valid;
-
-    if (!valid) {
-      step.classList.add("ct-form-invalid");
-      setTimeout(() => {
-        step.classList.remove("ct-form-invalid");
-      }, 300);
-    }
 
     return valid;
   }
@@ -829,33 +782,6 @@ export class MultiStepForm {
     }
   }
 
-  showError(step, errorType, message) {
-    if (this.errorMessages.length === 0) {
-      return;
-    }
-
-    this.errorMessages.forEach((errorMessage) => {
-      errorMessage.style.color = this.errorColor;
-      errorMessage.style.fontWeight = "bold";
-      errorMessage.style.transition = "color 0.3s ease";
-      errorMessage.style.display = "block";
-
-      if (errorType === "error") {
-        errorMessage.innerHTML = message;
-      } else if (errorType === "custom") {
-        errorMessage.innerHTML = errorMessage.getAttribute(
-          "ct-form-customErrorMessage",
-        );
-      }
-
-      setTimeout(() => {
-        errorMessage.style.color = "transparent";
-        errorMessage.style.transition = "color 0.3s ease";
-        errorMessage.style.display = "none";
-      }, 1000);
-    });
-  }
-
   updateNextButtonOpacity(button, visibility) {
     if (button) {
       if (visibility) {
@@ -869,16 +795,6 @@ export class MultiStepForm {
       }
 
       return;
-    }
-  }
-
-  handleInvalidInput(step, input) {
-    const invalid = input.getAttribute("ct-form-invalid");
-
-    if (invalid) {
-      this.updateNextButtonOpacity(step, false);
-
-      invalid.style.border = `1px solid ${this.errorColor}`;
     }
   }
 
@@ -984,5 +900,102 @@ export class MultiStepForm {
     if (optionLabel) {
       optionLabel.textContent = optionInput;
     }
+  }
+
+  setError(element, message) {
+    const inputControl = element.parentElement;
+    const errorDisplay = inputControl.querySelector("[ct-form-error]");
+
+    if (errorDisplay) {
+      errorDisplay.innerText = message;
+    }
+
+    inputControl.classList.add("error");
+    inputControl.classList.remove("success");
+  }
+
+  setSuccess(element) {
+    const inputControl = element.parentElement;
+    const errorDisplay = inputControl.querySelector("[ct-form-error]");
+
+    if (errorDisplay) {
+      errorDisplay.innerText = "";
+    }
+
+    inputControl.classList.remove("error");
+    inputControl.classList.add("success");
+  }
+
+  validateInputs(step) {
+    const inputs = Array.from(step.querySelectorAll("input"));
+    const textareas = Array.from(step.querySelectorAll("textarea"));
+    const selects = Array.from(step.querySelectorAll("select"));
+
+    const allInputs = inputs.concat(textareas).concat(selects);
+    let valid = true;
+
+    allInputs.forEach((input) => {
+      const inputValue = input.value.trim();
+
+      if (input.required && inputValue.length === 0) {
+        const message = input.getAttribute("ct-form-requiredMessage")
+          ? input.getAttribute("ct-form-requiredMessage")
+          : "This field is required";
+
+        console.log(message);
+
+        this.setError(input, message);
+
+        valid = false;
+      } else {
+        this.setSuccess(input);
+
+        valid = true;
+      }
+
+      if (
+        input.getAttribute("ct-form-type") === "email" &&
+        inputValue.length > 0 &&
+        input.type === "email"
+      ) {
+        if (!this.isValidEmail(inputValue)) {
+          const message = input.getAttribute("ct-form-emailMessage");
+
+          this.setError(input, message);
+
+          valid = false;
+        } else {
+          this.setSuccess(input);
+
+          valid = true;
+        }
+      }
+
+      if (
+        input.getAttribute("ct-form-type") === "number" &&
+        inputValue.length > 0 &&
+        input.type === "number"
+      ) {
+        if (!this.validateNumber(inputValue)) {
+          const message = input.getAttribute("ct-form-numberMessage");
+
+          this.setError(input, message);
+
+          valid = false;
+        } else {
+          this.setSuccess(input);
+
+          valid = true;
+        }
+      }
+    });
+
+    return valid;
+  }
+
+  validateNumber(number) {
+    const regex = /^\d+$/;
+
+    return regex.test(number);
   }
 }
