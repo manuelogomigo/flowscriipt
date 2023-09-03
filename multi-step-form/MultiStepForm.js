@@ -278,9 +278,10 @@ export class MultiStepForm {
     this.form.addEventListener("invalid", (event) =>
       this.handleFormInvalid(event),
     );
-    this.form.addEventListener("submit", (event) =>
-      this.handleFormSubmit(event),
-    );
+    this.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      this.handleFormSubmit(event);
+    });
 
     window.addEventListener("DOMContentLoaded", () => this.handleFormLoad());
   }
@@ -304,8 +305,6 @@ export class MultiStepForm {
         const prevStep = currentStep.previousElementSibling;
         this.showPrevStep(currentStep, prevStep);
         this.scrollToTopOfForm();
-      } else if (buttonType === "submit") {
-        this.handleSubmitButton(target);
       }
     }
   }
@@ -537,6 +536,10 @@ export class MultiStepForm {
         nextButton.click();
       }
     }
+  }
+
+  getCurrentStep() {
+    return this.steps.find((step) => step.style.opacity === "1");
   }
 
   handleFormLoad() {
@@ -798,20 +801,6 @@ export class MultiStepForm {
     }
   }
 
-  handleSubmitButton(submitButton) {
-    if (submitButton) {
-      // this.submitForm();
-
-      if (this.resetEnabled) {
-        setTimeout(() => {
-          this.resetForm();
-        }, 1000);
-      } else {
-        return;
-      }
-    }
-  }
-
   resetForm() {
     const lastStep = this.steps[this.steps.length - 1];
 
@@ -942,8 +931,6 @@ export class MultiStepForm {
           ? input.getAttribute("ct-form-requiredMessage")
           : "This field is required";
 
-        console.log(message);
-
         this.setError(input, message);
 
         valid = false;
@@ -997,5 +984,15 @@ export class MultiStepForm {
     const regex = /^\d+$/;
 
     return regex.test(number);
+  }
+
+  handleFormSubmit() {
+    if (this.resetEnabled) {
+      setTimeout(() => {
+        this.resetForm();
+      }, 1000);
+    } else {
+      return;
+    }
   }
 }
