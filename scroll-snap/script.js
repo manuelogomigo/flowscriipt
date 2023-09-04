@@ -2,15 +2,13 @@ const sections = document.querySelectorAll("[ct-scroll-section]");
 let currentSectionIndex = 0;
 
 const options = {
-  root: null,
-  rootMargin: "0px",
-  threshold: 0.5,
+  threshold: 0.4,
 };
 
 let scrolling = false;
 const scrollSnap = (entries, observer)=> {
   entries.forEach((entry) => {
-    if (entry.isIntersecting) {
+    if (entry.isIntersecting && entry.intersectionRatio >= 0.6 && !scrolling) {
       const index = [...sections].findIndex(
         (section) => section.id === entry.target.id,
       );
@@ -32,5 +30,5 @@ sections.forEach((section) => {
 
 function VerticalScrollToSection(index) {
   const targetSection = sections[index];
-  targetSection.scrollIntoView({ behavior: "auto", block: "start" });
+  targetSection.scrollIntoView({ behavior: "auto", block: "center" });
 }
