@@ -138,8 +138,8 @@
  */
 
 export class MultiStepForm {
-  constructor() {
-    this.form = document.querySelector('[ct-form-mode="multi-step"]');
+  constructor(form) {
+    this.form = form;
 
     if (!this.form) {
       // eslint-disable-next-line no-console
@@ -675,23 +675,11 @@ export class MultiStepForm {
   //   });
   // }
 
+  // handleFormCheckAndShow(step) {
+
   handleFormCheckAndHide(step) {
     const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
     const hideElements = Array.from(step.querySelectorAll("[ct-form-hide]"));
-
-    function showHideElement(uniqueValue) {
-      const hideElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
-      if (hideElement) {
-        hideElement.style.display = "block";
-      }
-    }
-
-    function hideHideElement(uniqueValue) {
-      const hideElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
-      if (hideElement) {
-        hideElement.style.display = "none";
-      }
-    }
 
     hideElements.forEach((hideElement) => {
       hideElement.style.display = "none";
@@ -703,30 +691,44 @@ export class MultiStepForm {
       );
       const uniqueValue = label.getAttribute("ct-form-check");
 
+      let prevUniqueValue = null;
+
       if (input && uniqueValue) {
         input.addEventListener("change", () => {
-          if (input.type === "radio") {
-            labels.forEach((otherLabel) => {
-              if (otherLabel !== label) {
-                const otherInput = otherLabel.querySelector(
-                  'input[type="radio"]',
-                );
-                const otherUniqueValue =
-                  otherLabel.getAttribute("ct-form-check");
-                hideHideElement(otherUniqueValue);
-                if (otherInput.checked) {
-                  showHideElement(otherUniqueValue);
-                }
-              }
-            });
-          } else if (input.type === "checkbox") {
+          if (input.type === "radio" || input.type === "checkbox") {
             if (input.checked) {
-              showHideElement(uniqueValue);
+              this.showHideElement(uniqueValue);
+
+              // Check if there was a previously checked input
+              if (prevUniqueValue) {
+                this.hideHideElement(prevUniqueValue);
+              }
+
+              // Update the previously checked input
+              prevUniqueValue = uniqueValue;
             } else {
-              hideHideElement(uniqueValue);
+              this.hideElement(uniqueValue);
             }
           }
         });
+      }
+    });
+  }
+
+  showHideElement(uniqueValue) {
+    this.steps.forEach((step) => {
+      const stepElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
+      if (stepElement) {
+        stepElement.style.display = "block";
+      }
+    });
+  }
+
+  hideElement(uniqueValue) {
+    this.steps.forEach((step) => {
+      const stepElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
+      if (stepElement) {
+        stepElement.style.display = "none";
       }
     });
   }
