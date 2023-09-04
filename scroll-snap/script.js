@@ -1,37 +1,36 @@
-// Flowscriipt JavaScript code to scroll snap to the next page
-// Add class [ct-scroll-container] to the the parent div
-//Add class [ct-vertical-scroll] to each of sections you want to scroll to
+const sections = document.querySelectorAll("[ct-scroll-section]");
+let currentSectionIndex = 0;
 
+const options = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.5,
+};
 
-
-// Vertical scrolling
-const scrollContainer = document.querySelector(".ct-scroll-container");
-const scrollSections = document.querySelectorAll(".ct-vertical-scroll");
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Smooth scroll to the target element
-    function scrollToSection(target) {
-        scrollContainer.scrollTo({
-            top: target.offsetTop,
-            behavior: "smooth"
-        });
+let scrolling = false;
+const scrollSnap = (entries, observer)=> {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const index = [...sections].findIndex(
+        (section) => section.id === entry.target.id,
+      );
+      currentSectionIndex = index;
+      scrolling = true;
+      VerticalScrollToSection(currentSectionIndex);
+      setTimeout(() => {
+        scrolling = false;
+      }, 1000);
     }
+  });
+};
 
-    // Scroll snapping behavior
-    let isScrolling = false;
-    scrollContainer.addEventListener("scroll", function () {
-        if (!isScrolling) {
-            for (const section of scrollSections) {
-                if (section.offsetTop <= scrollContainer.scrollTop + scrollContainer.clientHeight / 2 && section.offsetTop + section.offsetHeight > scrollContainer.scrollTop + scrollContainer.clientHeight / 2) {
-                    scrollToSection(section);
-                    break;
-                }
-            }
+const observer = new IntersectionObserver(scrollSnap, options);
 
-            isScrolling = true;
-            setTimeout(function () {
-                isScrolling = false;
-            }, 100);
-        }
-    });
+sections.forEach((section) => {
+  observer.observe(section);
 });
+
+function VerticalScrollToSection(index) {
+  const targetSection = sections[index];
+  targetSection.scrollIntoView({ behavior: "auto", block: "start" });
+}
