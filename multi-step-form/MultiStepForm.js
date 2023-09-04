@@ -928,27 +928,16 @@ export class MultiStepForm {
     allInputs.forEach((input) => {
       const inputValue = input.value.trim();
 
-      if (input.required && inputValue.length === 0) {
-        const message = input.getAttribute("ct-form-requiredMessage")
-          ? input.getAttribute("ct-form-requiredMessage")
-          : "This field is required";
+      // Check if the input element is visible
+      const computedStyle = window.getComputedStyle(input);
+      const isInputVisible =
+        computedStyle.getPropertyValue("display") !== "none";
 
-        this.setError(input, message);
-
-        valid = false;
-      } else {
-        this.setSuccess(input);
-
-        valid = true;
-      }
-
-      if (
-        input.getAttribute("ct-form-type") === "email" &&
-        inputValue.length > 0 &&
-        input.type === "email"
-      ) {
-        if (!this.isValidEmail(inputValue)) {
-          const message = input.getAttribute("ct-form-emailMessage");
+      if (isInputVisible) {
+        if (input.required && inputValue.length === 0) {
+          const message = input.getAttribute("ct-form-requiredMessage")
+            ? input.getAttribute("ct-form-requiredMessage")
+            : "This field is required";
 
           this.setError(input, message);
 
@@ -958,23 +947,39 @@ export class MultiStepForm {
 
           valid = true;
         }
-      }
 
-      if (
-        input.getAttribute("ct-form-type") === "number" &&
-        inputValue.length > 0 &&
-        input.type === "number"
-      ) {
-        if (!this.validateNumber(inputValue)) {
-          const message = input.getAttribute("ct-form-numberMessage");
+        if (
+          input.getAttribute("ct-form-type") === "email" &&
+          inputValue.length > 0
+        ) {
+          if (!this.isValidEmail(inputValue)) {
+            const message = input.getAttribute("ct-form-emailMessage");
 
-          this.setError(input, message);
+            this.setError(input, message);
 
-          valid = false;
-        } else {
-          this.setSuccess(input);
+            valid = false;
+          } else {
+            this.setSuccess(input);
 
-          valid = true;
+            valid = true;
+          }
+        }
+
+        if (
+          input.getAttribute("ct-form-type") === "number" &&
+          inputValue.length > 0 &&
+          input.type === "number" &&
+          input.style.display !== "none"
+        ) {
+          if (!this.validateNumber(inputValue)) {
+            const message = input.getAttribute("ct-form-numberMessage");
+
+            this.setError(input, message);
+
+            valid = false;
+          } else {
+            this.setSuccess(input);
+          }
         }
       }
     });
