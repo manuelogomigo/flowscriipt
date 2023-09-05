@@ -37,6 +37,16 @@ document.addEventListener("DOMContentLoaded", function () {
   updateProgressLine(0); // Set the initial progress line width
   updatePercentDisplay(0); // Set the initial current percentage
 
+  // Function to scroll to the top of the form
+  function scrollToFormTop() {
+    const form = document.querySelector('[ct-form-mode="multi-step"]');
+    const formPosition = form.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: formPosition,
+      behavior: "smooth" // Use 'auto' for immediate scrolling
+    });
+  }
+
   // Add click event listener to the form
   form.addEventListener("click", function (event) {
     let target = event.target;
@@ -58,35 +68,28 @@ document.addEventListener("DOMContentLoaded", function () {
       target.matches('button[ct-form-button="next"]') ||
       target.matches('a[ct-form-button="next"]')
     ) {
-      event.preventDefault();
+      target.setAttribute("href", "javascript:void(0)");
       const currentStep = target.closest('[ct-form-item="step"]');
       const nextStep = currentStep.nextElementSibling;
 
       if (validateStep(currentStep)) {
         showNextStep(target, currentStep, nextStep);
         handleRadioAutoProgress(nextStep);
-        scrollToTopOfForm(); // Scroll to the top of the form
+        scrollToFormTop(); // Scroll to the top of the form after showing the next step
       }
     } else if (
       target.matches('button[ct-form-button="prev"]') ||
       target.matches('a[ct-form-button="prev"]')
     ) {
-      event.preventDefault();
+      target.setAttribute("href", "javascript:void(0)");
       const currentStep = target.closest('[ct-form-item="step"]');
       const prevStep = currentStep.previousElementSibling;
 
+      scrollToFormTop(); // Scroll to the top of the form after showing the next step
+
       showPrevStep(target, currentStep, prevStep);
-      scrollToTopOfForm(); // Scroll to the top of the form
     }
   });
-
-  // Function to scroll to the top of the form
-  function scrollToTopOfForm() {
-    window.scrollTo({
-      top: form.getBoundingClientRect().top + window.scrollY,
-      behavior: "smooth"
-    });
-  }
 
   // Function to show the next step with smooth transition
   function showNextStep(button, currentStep, nextStep) {
@@ -348,80 +351,86 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to handle the ct-form-check and ct-form-hide attributes with toggle
-  function handleFormCheckAndHide(step) {
-    const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
-    const hideElements = Array.from(step.querySelectorAll("[ct-form-hide]"));
+  // Function to handle ct-form-conditional and ct-form-dependent attributes globally
+  function handleConditionalVisibility() {
+    const labels = Array.from(
+      document.querySelectorAll("label[ct-form-conditional]")
+    );
+    const dependentElements = Array.from(
+      document.querySelectorAll("[ct-form-dependent]")
+    );
 
-    // Function to show the associated hideElement
-    function showHideElement(uniqueValue) {
-      const hideElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
-      if (hideElement) {
-        hideElement.style.display = "block";
+    // Function to show the associated dependentElement
+    function showDependentElement(uniqueValue) {
+      const dependentElement = document.querySelector(
+        `[ct-form-dependent="${uniqueValue}"]`
+      );
+      if (dependentElement) {
+        dependentElement.style.display = "block";
       }
     }
 
-    // Function to hide the associated hideElement
-    function hideHideElement(uniqueValue) {
-      const hideElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
-      if (hideElement) {
-        hideElement.style.display = "none";
+    // Function to hide the associated dependentElement
+    function hideDependentElement(uniqueValue) {
+      const dependentElement = document.querySelector(
+        `[ct-form-dependent="${uniqueValue}"]`
+      );
+      if (dependentElement) {
+        dependentElement.style.display = "none";
       }
     }
 
-    // Hide all elements with ct-form-hide attribute onload
-    hideElements.forEach((hideElement) => {
-      hideElement.style.display = "none";
+    // Hide all elements with ct-form-dependent attribute onload
+    dependentElements.forEach((dependentElement) => {
+      dependentElement.style.display = "none";
     });
 
-    // Add input event listeners to all radio inputs and checkboxes in the step
+    // Add input event listeners to all radio inputs and checkboxes globally
     const radioInputs = Array.from(
-      step.querySelectorAll('input[type="radio"]')
+      document.querySelectorAll('input[type="radio"]')
     );
     const checkboxInputs = Array.from(
-      step.querySelectorAll('input[type="checkbox"]')
+      document.querySelectorAll('input[type="checkbox"]')
     );
 
     radioInputs.forEach((radioInput) => {
       const uniqueValue = radioInput.parentElement.getAttribute(
-        "ct-form-check"
+        "ct-form-conditional"
       );
       radioInput.addEventListener("change", function () {
         if (radioInput.checked) {
-          showHideElement(uniqueValue);
-          // Hide other ct-form-hide elements associated with unchecked radio buttons
+          showDependentElement(uniqueValue);
+          // Hide other ct-form-dependent elements associated with unchecked radio buttons
           radioInputs.forEach((input) => {
             const otherUniqueValue = input.parentElement.getAttribute(
-              "ct-form-check"
+              "ct-form-conditional"
             );
             if (otherUniqueValue !== uniqueValue) {
-              hideHideElement(otherUniqueValue);
+              hideDependentElement(otherUniqueValue);
             }
           });
         } else {
-          hideHideElement(uniqueValue);
+          hideDependentElement(uniqueValue);
         }
       });
     });
 
     checkboxInputs.forEach((checkboxInput) => {
       const uniqueValue = checkboxInput.parentElement.getAttribute(
-        "ct-form-check"
+        "ct-form-conditional"
       );
       checkboxInput.addEventListener("change", function () {
         if (checkboxInput.checked) {
-          showHideElement(uniqueValue);
+          showDependentElement(uniqueValue);
         } else {
-          hideHideElement(uniqueValue);
+          hideDependentElement(uniqueValue);
         }
       });
     });
   }
 
-  // Loop through each step and handle ct-form-check and ct-form-hide
-  steps.forEach((step) => {
-    handleFormCheckAndHide(step);
-  });
+  // Call the function to handle ct-form-conditional and ct-form-dependent attributes globally
+  handleConditionalVisibility();
 
   // Function to handle ct-form-toggleClass for labels
   function handleLabelToggleClass(step) {
@@ -638,4 +647,3 @@ document.addEventListener("DOMContentLoaded", function () {
     handleRadioAutoProgress(currentStep);
   }
 });
-
