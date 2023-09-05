@@ -5,16 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vertical Scroll</title>
+    <link rel="stylesheet" href="style.css">
     <script src="./script.js" defer></script>
     <style>
-        .container {
+        body {
             height: 100vh;
             
         }
         section {
             padding: 50px;
-            min-height: 100vh;
-            transition: transform 0.5s ease-in-out;
+            height: 100vh;
+            /* transition: transform 0.5s ease-in-out; */
         }
         .is-1 {
             background-color: red;
@@ -28,7 +29,7 @@
     </style>
 </head>
 <body>
-  <div class="container">  
+  <!-- <div class="container"> -->
     <section class="is-1" id="section1" ct-scroll-section>
       <!-- Content for section 1 -->
     </section>
@@ -38,6 +39,6 @@
     <section class="is-3" id="section3" ct-scroll-section>
       <!-- Content for section 3 -->
     </section>
-  </div>
+  <!-- </div> -->
 </body>
 </html>
