@@ -297,7 +297,7 @@ export class MultiStepForm {
         if (!currentStep.hasAttribute("ct-form-checkbox-display")) {
           this.showNextStep(currentStep, nextStep);
         }
-        this.handleRadioAutoProgress(nextStep);
+        // this.handleRadioAutoProgress(nextStep);
         this.scrollToTopOfForm();
       } else if (buttonType === "prev") {
         event.preventDefault();
@@ -391,10 +391,31 @@ export class MultiStepForm {
   }
 
   validateStep(step) {
+    const inputs = Array.from(step.querySelectorAll("input"));
+    const textareas = Array.from(step.querySelectorAll("textarea"));
+    const selects = Array.from(step.querySelectorAll("select"));
+
+    const allInputs = inputs.concat(textareas).concat(selects);
     let valid = true;
 
-    valid = this.validateInputs(step) && valid;
-    valid = this.validateCheckboxes(step) && valid;
+    allInputs.forEach((input) => {
+      const inputValue = input.value.trim();
+
+      if (
+        input.style.display !== null &&
+        input.style.display !== "none" &&
+        input.style.display !== ""
+      ) {
+        if (input.required && inputValue.length === 0) {
+          valid = false;
+        } else {
+          valid = true;
+        }
+      }
+    });
+
+    // valid = this.validateInputs(step) && valid;
+    // valid = this.validateCheckboxes(step) && valid;
 
     return valid;
   }
@@ -486,6 +507,8 @@ export class MultiStepForm {
 
               associatedInput.addEventListener("change", () => {
                 this.updateFormFieldText(formField, associatedInputs);
+                this.validateInputs(step);
+                this.validateCheckboxes(step);
               });
 
               associatedInput.addEventListener("focus", () => {
@@ -718,8 +741,15 @@ export class MultiStepForm {
   showHideElement(uniqueValue) {
     this.steps.forEach((step) => {
       const stepElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
+
       if (stepElement) {
         stepElement.style.display = "block";
+
+        const childElements = stepElement.querySelectorAll("*");
+
+        childElements.forEach((childElement) => {
+          childElement.style.display = "block";
+        });
       }
     });
   }
@@ -727,8 +757,16 @@ export class MultiStepForm {
   hideElement(uniqueValue) {
     this.steps.forEach((step) => {
       const stepElement = step.querySelector(`[ct-form-hide="${uniqueValue}"]`);
+
       if (stepElement) {
         stepElement.style.display = "none";
+
+        const childElements = stepElement.querySelectorAll("*");
+
+        childElements.forEach((childElement) => {
+          childElement.style.display = "none";
+          childElement.hidden = true;
+        });
       }
     });
   }
@@ -928,12 +966,7 @@ export class MultiStepForm {
     allInputs.forEach((input) => {
       const inputValue = input.value.trim();
 
-      // Check if the input element is visible
-      const computedStyle = window.getComputedStyle(input);
-      const isInputVisible =
-        computedStyle.getPropertyValue("display") !== "none";
-
-      if (isInputVisible) {
+      if (input.style.display !== null && input.style.display !== "none") {
         if (input.required && inputValue.length === 0) {
           const message = input.getAttribute("ct-form-requiredMessage")
             ? input.getAttribute("ct-form-requiredMessage")

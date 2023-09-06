@@ -241,13 +241,18 @@
                     <label for="name">Name:</label>
                     <input type="text" id="name" name="name" required ct-form-required="true" ct-form-field="name" />
                     <br />
-                    <!-- <label for="email">Email:</label>
+                    <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required ct-form-required="true"
                         ct-form-field="email" />
-                    <br /> -->
+                    <br />
                     <label for="phone">Phone:</label>
                     <input type="tel" id="phone" name="phone" ct-form-required="true" ct-form-field="phone" />
                     <br />
+
+                    <div class="buttons">
+                        <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                        <button type="button" class="next-button" ct-form-button="next">Next</button>
+                    </div>
                 </div>
 
                 <div ct-form-hide="address">
@@ -261,12 +266,14 @@
                     <label for="state">State:</label>
                     <input type="text" id="state" name="state" required ct-form-required="true" ct-form-field="state" />
                     <br />
+
+                    <div class="buttons">
+                        <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                        <button type="button" class="next-button" ct-form-button="next">Next</button>
+                    </div>
                 </div>
 
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
+
 
                 <div class="progress-bar" ct-form-progress="line">
                     <div class="progress-bar-fill"></div>
