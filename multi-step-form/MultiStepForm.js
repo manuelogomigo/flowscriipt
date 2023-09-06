@@ -305,6 +305,9 @@ export class MultiStepForm {
         const prevStep = currentStep.previousElementSibling;
         this.showPrevStep(currentStep, prevStep);
         this.scrollToTopOfForm();
+      } else if (buttonType === "submit") {
+        event.preventDefault();
+        this.handleFormSubmit();
       }
     }
   }
@@ -851,6 +854,7 @@ export class MultiStepForm {
 
       inputs.forEach((input) => {
         input.value = "";
+        input.checked = false;
       });
 
       textareas.forEach((textarea) => {

@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="step" id="step7" ct-form-item="step" ct-form-display="flex">
+            <div class="step" id="step7" ct-form-item="step" ct-form-display="flex" ct-form-reset="true">
                 <div class="progress-number">
                     <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
                 </div>
@@ -225,7 +225,7 @@
 
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                    <button type="submit" class="next-button" ct-form-button="next">Next</button>
                 </div>
 
                 <div class="progress-bar" ct-form-progress="line">
@@ -249,10 +249,7 @@
                     <input type="tel" id="phone" name="phone" ct-form-required="true" ct-form-field="phone" />
                     <br />
 
-                    <div class="buttons">
-                        <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                        <button type="button" class="next-button" ct-form-button="next">Next</button>
-                    </div>
+
                 </div>
 
                 <div ct-form-hide="address">
@@ -267,12 +264,12 @@
                     <input type="text" id="state" name="state" required ct-form-required="true" ct-form-field="state" />
                     <br />
 
-                    <div class="buttons">
-                        <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                        <button type="button" class="next-button" ct-form-button="next">Next</button>
-                    </div>
                 </div>
 
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="submit" class="next-button" ct-form-button="submit">Submit</button>
+                </div>
 
 
                 <div class="progress-bar" ct-form-progress="line">
