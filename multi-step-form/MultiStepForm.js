@@ -405,8 +405,8 @@ export class MultiStepForm {
       const inputValue = input.value.trim();
 
       if (
-        input.style.display !== null &&
-        input.style.display !== "none" &&
+        input.style.display !== null ||
+        input.style.display !== "none" ||
         input.style.display !== ""
       ) {
         if (input.required && inputValue.length === 0) {
@@ -810,6 +810,8 @@ export class MultiStepForm {
   updateNextButtonVisibility(step) {
     const nextButton = step.querySelector('[ct-form-button="next"]');
     const submitButton = step.querySelector('[ct-form-button="submit"]');
+
+    // console.log(this.validateStep(step));
 
     if (nextButton) {
       if (this.validateStep(step)) {
