@@ -193,6 +193,7 @@ export class MultiStepForm {
     this.totalNumberDisplays = this.form.querySelectorAll(
       '[ct-form-number="total"]',
     );
+    this.dataValues = this.form.querySelectorAll("[ct-form-data]");
     this.resetEnabled =
       this.form.getAttribute("ct-form-reset") === "true" ? true : false;
     this.submitRedirect = this.form.getAttribute("ct-form-redirect");
@@ -274,6 +275,9 @@ export class MultiStepForm {
     );
     this.form.addEventListener("change", (event) => {
       this.handleFormChange(event);
+      this.steps.forEach((step) => {
+        this.handleDataValues(step);
+      });
     });
     this.form.addEventListener("invalid", (event) =>
       this.handleFormInvalid(event),
@@ -1040,5 +1044,27 @@ export class MultiStepForm {
     } else {
       return;
     }
+  }
+
+  handleDataValues(step) {
+    const dataOptions = Array.from(
+      step.querySelectorAll("[ct-form-data-option]"),
+    );
+    const { dataValues } = this;
+
+    dataOptions.forEach((option) => {
+      const optionString = option.getAttribute("ct-form-data-option");
+      const optionValue = optionString.split(" ");
+
+      this.hideElement(option.getAttribute("ct-form-hide"));
+
+      dataValues.forEach((dataValue) => {
+        const dataValueName = dataValue.getAttribute("ct-form-data");
+
+        if (optionValue.includes(dataValueName) && dataValue.checked) {
+          this.showHideElement(option.getAttribute("ct-form-hide"));
+        }
+      });
+    });
   }
 }

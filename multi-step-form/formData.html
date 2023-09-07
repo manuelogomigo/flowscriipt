@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- <script src="./testScript.js" type="module" defer></script> -->
+
+    <script src="./testScript.js" type="module" defer></script>
+    <link rel="stylesheet" href="./formDataStyle.css" />
+
+    <title>Multi-Step Form Test</title>
+</head>
+
+<body>
+    <div class="container">
+        <form class="quiz-form" action="submit" id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true">
+            <h1>Form Quiz</h1>
+            <p>Answer the following questions:</p>
+
+            <div class="question" ct-form-item="step">
+                <div class="progress-number">
+                    <h2>
+                        Question
+                        <span ct-form-number="current">1</span>
+                    </h2>
+                    <p>What is the largest planet in our solar system?</p>
+                </div>
+
+                <label>
+                    <input type="radio" name="q1" value="a" ct-form-data="paris">
+                    a) Paris
+                </label>
+                <label>
+                    <input type="radio" name="q1" value="b" ct-form-data="london">
+                    b) London
+                </label>
+                <label>
+                    <input type="radio" name="q1" value="c" ct-form-data="berlin">
+                    c) Berlin
+                </label>
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="question" ct-form-item="step">
+                <div class="progress-number">
+                    <h2>
+                        Question
+                        <span ct-form-number="current">1</span>
+                    </h2>
+                    <p>What is the largest planet in our solar system?</p>
+                </div>
+
+                <label>
+                    <input type="radio" name="q2" value="a" ct-form-data="jupiter">
+                    a) Jupiter
+                </label>
+                <label>
+                    <input type="radio" name="q2" value="b" ct-form-data="saturn">
+                    b) Saturn
+                </label>
+                <label>
+                    <input type="radio" name="q2" value="c" ct-form-data="earth">
+                    c) Earth
+                </label>
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="question" ct-form-item="step">
+                <div class="progress-number">
+                    <h2>
+                        Question
+                        <span ct-form-number="current">1</span>
+                    </h2>
+                    <p>What is the largest planet in our solar system?</p>
+                </div>
+
+                <label>
+                    <input type="radio" name="q3" value="a" ct-form-data="mount_everest">
+                    a) Mount Everest
+                </label>
+                <label>
+                    <input type="radio" name="q3" value="b" ct-form-data="mount_kilimanjaro">
+                    b) Mount Kilimanjaro
+                </label>
+                <label>
+                    <input type="radio" name="q3" value="c" ct-form-data="mount_fuji">
+                    c) Mount Fuji
+                </label>
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <button type="button" class="next-button" ct-form-button="next">Next</button>
+                    <!-- <button type="submit" class="next-button" ct-form-button="submit">Submit</button> -->
+                </div>
+
+                <div class="progress-bar" ct-form-progress="line">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="success-page" ct-form-card ct-form-item="step">
+                <h1>Form Submitted</h1>
+                <p>Thank you for submitting the form!</p>
+
+                <h3>You got:</h3>
+                <ul>
+                    <li>
+                        <span>Question 1: </span>
+                        <span ct-form-data-option='paris berlin' ct-form-hide="q1wrong">Wrong</span>
+                        <span ct-form-data-option='london' ct-form-hide="q1right">Right</span>
+                    </li>
+                    <li>
+                        <span>Question 2: </span>
+                        <span ct-form-data-option='earth saturn' ct-form-hide="q2wrong">Wrong</span>
+                        <span ct-form-data-option='jupiter' ct-form-hide="q2right">Right</span>
+                    </li>
+                    <li>
+                        <span>Question 3: </span>
+                        <span ct-form-data-option='mount_fuji mount_kilimanjaro' ct-form-hide="q3wrong">Wrong</span>
+                        <span ct-form-data-option='mount_everest' ct-form-hide="q3right">Right</span>
+                    </li>
+                </ul>
+
+
+                <div class="buttons">
+                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
+                    <!-- <button type="button" class="next-button" ct-form-button="next">Next</button> -->
+                    <button type="submit" class="next-button" ct-form-button="submit">Submit</button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- <script src="./testScript.js" type="module"></script> -->
+</body>
+
+</html>
