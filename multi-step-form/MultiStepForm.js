@@ -371,7 +371,7 @@ export class MultiStepForm {
       this.scrollToTopOfForm();
 
       this.updateStepNumber(this.getStepNumber(prevStep));
-      // this.updateNextButtonOpacity(prevStep);
+      this.updateNextButtonOpacity(prevStep);
       this.updateNextButtonVisibility(prevStep);
 
       const progress = this.getStepNumber(prevStep) / this.totalSteps;
@@ -812,12 +812,25 @@ export class MultiStepForm {
   }
 
   updateNextButtonVisibility(step) {
+    const prevButton = step.querySelector('[ct-form-button="prev"]');
     const nextButton = step.querySelector('[ct-form-button="next"]');
     const submitButton = step.querySelector('[ct-form-button="submit"]');
 
-    // console.log(this.validateStep(step));
+    if (prevButton) {
+      if (this.getStepNumber(step) === 1) {
+        prevButton.style.display = "none";
+      } else {
+        prevButton.style.display = "inline-block";
+      }
+    }
 
     if (nextButton) {
+      if (this.getStepNumber(step) === this.steps.length) {
+        nextButton.style.display = "none";
+      } else {
+        nextButton.style.display = "inline-block";
+      }
+
       if (this.validateStep(step)) {
         this.updateNextButtonOpacity(nextButton, true);
       } else {
