@@ -22,20 +22,16 @@
                         Question
                         <span ct-form-number="current">1</span>
                     </h2>
-                    <p>What is the largest planet in our solar system?</p>
+                    <p>Are you a social person?</p>
                 </div>
 
                 <label>
-                    <input type="radio" name="q1" value="a" ct-form-data="paris">
-                    a) Paris
+                    <input type="radio" name="q1" value="a" ct-form-data="q1_yes">
+                    Yes
                 </label>
                 <label>
-                    <input type="radio" name="q1" value="b" ct-form-data="london">
-                    b) London
-                </label>
-                <label>
-                    <input type="radio" name="q1" value="c" ct-form-data="berlin">
-                    c) Berlin
+                    <input type="radio" name="q1" value="b" ct-form-data="q1_no">
+                    No
                 </label>
 
                 <div class="buttons">
@@ -54,20 +50,16 @@
                         Question
                         <span ct-form-number="current">1</span>
                     </h2>
-                    <p>What is the largest planet in our solar system?</p>
+                    <p>Do you enjoy taking risks?</p>
                 </div>
 
                 <label>
-                    <input type="radio" name="q2" value="a" ct-form-data="jupiter">
-                    a) Jupiter
+                    <input type="radio" name="q2" value="a" ct-form-data="q2_yes">
+                    Yes
                 </label>
                 <label>
-                    <input type="radio" name="q2" value="b" ct-form-data="saturn">
-                    b) Saturn
-                </label>
-                <label>
-                    <input type="radio" name="q2" value="c" ct-form-data="earth">
-                    c) Earth
+                    <input type="radio" name="q2" value="b" ct-form-data="q2_no">
+                    No
                 </label>
 
                 <div class="buttons">
@@ -86,20 +78,16 @@
                         Question
                         <span ct-form-number="current">1</span>
                     </h2>
-                    <p>What is the largest planet in our solar system?</p>
+                    <p>Are you easily stressed out?</p>
                 </div>
 
                 <label>
-                    <input type="radio" name="q3" value="a" ct-form-data="mount_everest">
-                    a) Mount Everest
+                    <input type="radio" name="q3" value="a" ct-form-data="q3_yes">
+                    Yes
                 </label>
                 <label>
-                    <input type="radio" name="q3" value="b" ct-form-data="mount_kilimanjaro">
-                    b) Mount Kilimanjaro
-                </label>
-                <label>
-                    <input type="radio" name="q3" value="c" ct-form-data="mount_fuji">
-                    c) Mount Fuji
+                    <input type="radio" name="q3" value="b" ct-form-data="q3_no">
+                    No
                 </label>
 
                 <div class="buttons">
@@ -117,7 +105,7 @@
                 <h1>Form Submitted</h1>
                 <p>Thank you for submitting the form!</p>
 
-                <h3>You got:</h3>
+                <!-- <h3>You got:</h3>
                 <ul>
                     <li>
                         <span>Question 1: </span>
@@ -134,7 +122,25 @@
                         <span ct-form-data-option='mount_fuji mount_kilimanjaro' ct-form-hide="q3wrong">Wrong</span>
                         <span ct-form-data-option='mount_everest' ct-form-hide="q3right">Right</span>
                     </li>
-                </ul>
+                </ul> -->
+
+                <div ct-form-hide="outgoing" ct-form-data-option='q1_yes q2_no q3_yes'>
+                    <h2>Outgoing</h2>
+                    <p>your are likely an outgoing and sociable person</p>
+                    <img src="" alt="">
+                </div>
+
+                <div ct-form-hide="adventuros" ct-form-data-option='q1_no q2_yes q3_yes'>
+                    <h2>adventuros</h2>
+                    <p>your are likely someone who enjoys.....</p>
+                    <img src="" alt="">
+                </div>
+
+                <div ct-form-hide="calm" ct-form-data-option='q1_no q2_no q3_no'>
+                    <h2>calm</h2>
+                    <p>your are likely someone who is able to handle.....</p>
+                    <img src="" alt="">
+                </div>
 
 
                 <div class="buttons">

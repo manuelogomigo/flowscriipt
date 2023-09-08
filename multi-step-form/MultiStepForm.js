@@ -1069,15 +1069,22 @@ export class MultiStepForm {
       const optionString = option.getAttribute("ct-form-data-option");
       const optionValue = optionString.split(" ");
 
-      this.hideElement(option.getAttribute("ct-form-hide"));
+      let shouldDisplayOption = true; // Initialize the flag to true
 
       dataValues.forEach((dataValue) => {
         const dataValueName = dataValue.getAttribute("ct-form-data");
 
-        if (optionValue.includes(dataValueName) && dataValue.checked) {
-          this.showHideElement(option.getAttribute("ct-form-hide"));
+        if (optionValue.includes(dataValueName) && !dataValue.checked) {
+          // If any required dataValue is not checked, hide the option
+          shouldDisplayOption = false;
         }
       });
+
+      if (shouldDisplayOption) {
+        this.showHideElement(option.getAttribute("ct-form-hide"));
+      } else {
+        this.hideElement(option.getAttribute("ct-form-hide"));
+      }
     });
   }
 }
