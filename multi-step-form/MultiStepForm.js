@@ -117,6 +117,12 @@
  * @method passValueToNextStep
  * Passes a value to the next step in the form.
  *
+ * @method handleFormSubmit
+ * Handles the form submit event, such as submitting the form and resetting it if enabled.
+ *
+ * @method handleDataValues
+ * Handles data values in the form, such as passing data to the next step.
+ *
  * @property {string} ct-form-mode - Specifies the form mode, likely for multi-step form handling.
  * @property {boolean} ct-form-reset - Indicates whether the form should be reset.
  * @property {boolean} ct-form-error - Indicates whether form errors should be displayed.
@@ -135,6 +141,9 @@
  * @property {boolean} ct-form-checkbox - Specifies a checkbox.
  * @property {boolean} ct-form-checkbox-display - Indicates whether checkboxes should change the step displayed.
  * @property {string} ct-form-checkbox-step - Specifies the step to display when a checkbox is selected.
+ * @property {string} ct-form-checkbox-hide - Specifies the element to hide when a checkbox is selected.
+ * @property {string} ct-form-data - Specifies the data to pass to the next step.
+ * @property {string} ct-form-data-option - attribute is used to define conditional actions for form elements within a multi-step form
  */
 
 export class MultiStepForm {
@@ -279,9 +288,6 @@ export class MultiStepForm {
         this.handleDataValues(step);
       });
     });
-    this.form.addEventListener("invalid", (event) =>
-      this.handleFormInvalid(event),
-    );
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.handleFormSubmit(event);
