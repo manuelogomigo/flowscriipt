@@ -1114,6 +1114,18 @@ export class MultiStepForm {
 
       if (this.evaluateConditionalDisplayLogic(condition, this.dataValues)) {
         this.displayAction(action, optionElement.getAttribute("ct-form-hide"));
+      } else {
+        if (action === "hide") {
+          this.displayAction(
+            "show",
+            optionElement.getAttribute("ct-form-hide"),
+          );
+        } else if (action === "show") {
+          this.displayAction(
+            "hide",
+            optionElement.getAttribute("ct-form-hide"),
+          );
+        }
       }
     });
   }
