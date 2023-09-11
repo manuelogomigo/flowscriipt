@@ -1059,32 +1059,100 @@ export class MultiStepForm {
     }
   }
 
+  // handleDataValues(step) {
+  //   const dataOptions = Array.from(
+  //     step.querySelectorAll("[ct-form-data-option]"),
+  //   );
+  //   const { dataValues } = this;
+
+  //   dataOptions.forEach((option) => {
+  //     const optionString = option.getAttribute("ct-form-data-option");
+  //     const optionValue = optionString.split(" ");
+
+  //     let shouldDisplayOption = true; // Initialize the flag to true
+
+  //     dataValues.forEach((dataValue) => {
+  //       const dataValueName = dataValue.getAttribute("ct-form-data");
+
+  //       if (optionValue.includes(dataValueName) && !dataValue.checked) {
+  //         // If any required dataValue is not checked, hide the option
+  //         shouldDisplayOption = false;
+  //       }
+  //     });
+
+  //     if (shouldDisplayOption) {
+  //       this.showHideElement(option.getAttribute("ct-form-hide"));
+  //     } else {
+  //       this.hideElement(option.getAttribute("ct-form-hide"));
+  //     }
+  //   });
+  // }
+
   handleDataValues(step) {
     const dataOptions = Array.from(
       step.querySelectorAll("[ct-form-data-option]"),
     );
-    const { dataValues } = this;
 
     dataOptions.forEach((option) => {
       const optionString = option.getAttribute("ct-form-data-option");
-      const optionValue = optionString.split(" ");
+      this.processFormDataOption(optionString, option);
+    });
+  }
 
-      let shouldDisplayOption = true; // Initialize the flag to true
+  processFormDataOption(attributeValue, optionElement) {
+    const options = JSON.parse(attributeValue);
 
-      dataValues.forEach((dataValue) => {
-        const dataValueName = dataValue.getAttribute("ct-form-data");
+    options.forEach((option) => {
+      const { condition } = option;
+      const { action } = option;
 
-        if (optionValue.includes(dataValueName) && !dataValue.checked) {
-          // If any required dataValue is not checked, hide the option
-          shouldDisplayOption = false;
-        }
-      });
-
-      if (shouldDisplayOption) {
-        this.showHideElement(option.getAttribute("ct-form-hide"));
-      } else {
-        this.hideElement(option.getAttribute("ct-form-hide"));
+      if (this.evaluateConditionalDisplayLogic(condition, this.dataValues)) {
+        this.displayAction(action, optionElement.getAttribute("ct-form-hide"));
       }
     });
+  }
+
+  evaluateConditionalDisplayLogic(condition, dataValues) {
+    const orConditions = condition.split("||"); // Split by logical OR
+    let result = false; // Initialize result to false since any true condition will make the result true
+
+    orConditions.forEach((orCondition) => {
+      const andConditions = orCondition.split("&&"); // Split by logical AND
+      let subConditionResult = true; // Initialize to true, as all conditions within an OR must be true
+
+      andConditions.forEach((component) => {
+        const trimmedComponent = component.trim();
+        const isChecked = this.checkVariable(dataValues, trimmedComponent);
+
+        // Update the subcondition result based on the evaluation of this component
+        subConditionResult = subConditionResult && isChecked;
+      });
+
+      // If any of the subconditions is true, set the result to true
+      if (subConditionResult) {
+        result = true;
+      }
+    });
+
+    return result;
+  }
+
+  // Function to check if a variable in dataValues is checked
+  checkVariable(dataValues, variable) {
+    const dataValueList = [...dataValues].filter((data) => {
+      return data.getAttribute("ct-form-data") === variable;
+    });
+
+    const dataValue = dataValueList[0];
+
+    return dataValue.checked ? true : false;
+  }
+
+  displayAction(action, element) {
+    if (action === "show") {
+      this.showHideElement(element);
+    } else if (action === "hide") {
+      this.hideElement(element);
+    }
   }
 }
