@@ -51,9 +51,11 @@
                 </div>
 
                 <label>
-                    <input type="radio" name="option" value="option1" ct-form-options-input="Books">
+                    <input type="checkbox" name="option" value="option1" ct-form-options-tag="name"
+                        ct-form-options-input="Books">
                     Option 1
                 </label>
+                <p ct-form-options-name="name"></p>
                 <br />
                 <label>
                     <input type="radio" name="option" value="option2" ct-form-options-input="Movies">
@@ -120,83 +122,7 @@
                 </div>
             </div>
 
-            <div class="step" id="step3" ct-form-item="step" ct-form-checkbox="1" ct-form-checkbox-display="true">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
 
-                <label for="credit-card">Credit Card:</label>
-                <input type="text" id="credit-card" name="credit-card" required ct-form-required="true"
-                    ct-form-field="credit-card" />
-                <br />
-                <label for="expiration-date">Expiration Date:</label>
-                <input type="text" id="expiration-date" name="expiration-date" required ct-form-required="true"
-                    ct-form-field="expiration-date" />
-                <br />
-                <div class="checkbox-container">
-                    <label class="custom-checkbox">
-                        <input type="checkbox" ct-form-checkbox-step="step4">
-                        <span class="checkmark"></span>
-                        <span class="checkbox-label">Checkbox 1</span>
-                    </label>
-                    <br />
-                    <label class="custom-checkbox">
-                        <input type="checkbox" ct-form-checkbox-step="step5">
-                        <span class="checkmark"></span>
-                        <span class="checkbox-label">Checkbox 2</span>
-                    </label>
-                </div>
-                <br />
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="step" id="step4" ct-form-item="step">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <label for="book-name">Book Name:</label>
-                <input type="text" id="book-name" name="book-name" required ct-form-required="true"
-                    ct-form-field="book-name" />
-                <br />
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="submit" class="next-button" ct-form-button="submit">Submit</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="step" id="step5" ct-form-item="step">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <label for="Game-name">Game Name:</label>
-                <input type="text" id="Game-name" name="Game-name" required ct-form-required="true"
-                    ct-form-field="Game-name" />
-                <br />
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="submit" class="next-button" ct-form-button="submit">Submit</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
 
             <div class="progress-percentage">
                 <span ct-form-percent="current">0</span>
@@ -215,6 +141,9 @@
                     <input type="checkbox" name="option" value="option1">
                     Name
                 </label>
+
+                <label for="" ct-form-hide="name">Show Name</label>
+
                 <br />
                 <label ct-form-check="address">
                     <input type="checkbox" name="option" value="option2">

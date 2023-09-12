@@ -596,6 +596,10 @@ export class MultiStepForm {
       optionInput.addEventListener("change", () => {
         this.handleOptionInput(optionInput);
       });
+
+      // if (optionInput.type === "radio" && optionInput.checked) {
+      //   this.handleOptionInput(optionInput);
+      // }
     });
 
     // Loop through each step and handle ct-form-field
@@ -619,9 +623,9 @@ export class MultiStepForm {
     });
 
     // Loop through each step and handle ct-form-toggleClass for buttons
-    this.steps.forEach((step) => {
-      this.setupConditionalDisplayLogic(step);
-    });
+    // this.steps.forEach((step) => {
+    //   this.setupConditionalDisplayLogic(step);
+    // });
 
     // Set up automatic radio progression if enabled
     this.radioAutoEnabled = false;
@@ -898,28 +902,28 @@ export class MultiStepForm {
     this.showNextStep(lastStep, this.steps[0]);
   }
 
-  setupConditionalDisplayLogic(step) {
-    const checkboxesSteps = Array.from(
-      step.querySelectorAll("[ct-form-checkbox-step]"),
-    );
+  // setupConditionalDisplayLogic(step) {
+  //   const checkboxesSteps = Array.from(
+  //     step.querySelectorAll("[ct-form-checkbox-step]"),
+  //   );
 
-    checkboxesSteps.forEach((checkbox) => {
-      const checkboxValue = checkbox.getAttribute("ct-form-checkbox-step");
-      const nextButton = step.querySelector('[ct-form-button="next"]');
+  //   checkboxesSteps.forEach((checkbox) => {
+  //     const checkboxValue = checkbox.getAttribute("ct-form-checkbox-step");
+  //     const nextButton = step.querySelector('[ct-form-button="next"]');
 
-      if (checkboxValue && nextButton) {
-        nextButton.addEventListener("click", () => {
-          if (checkbox.checked) {
-            const nextStep = this.getStep(checkboxValue);
+  //     if (checkboxValue) {
+  //       nextButton.addEventListener("click", () => {
+  //         if (checkbox.checked) {
+  //           const nextStep = this.getStep(checkboxValue);
 
-            this.showNextStep(step, nextStep);
-          } else {
-            return;
-          }
-        });
-      }
-    });
-  }
+  //           this.showNextStep(step, nextStep);
+  //         } else {
+  //           return;
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
 
   getStep(stepName) {
     const step = this.steps.find((step) => {
@@ -930,15 +934,21 @@ export class MultiStepForm {
 
   handleOptionInput(input) {
     const optionInput = input.getAttribute("ct-form-options-input");
+    const optionLabel = input.getAttribute("ct-form-options-tag");
+    const optionName = this.form.querySelectorAll(
+      `[ct-form-options-name="${optionLabel}"]`,
+    );
 
-    if (optionInput && input.checked) {
-      const step = input.closest('[ct-form-item="step"]');
-
-      const nextStep = this.findNextStep(step);
-
-      if (nextStep) {
-        this.passValueToNextStep(nextStep, optionInput);
-      }
+    if (optionInput && input.checked && optionName) {
+      optionName.forEach((name) => {
+        name.textContent = optionInput;
+      });
+    } else if (optionInput && !input.checked && optionName) {
+      optionName.forEach((name) => {
+        name.textContent = null;
+      });
+    } else {
+      return;
     }
   }
 
@@ -1172,5 +1182,21 @@ export class MultiStepForm {
     } else if (action === "hide") {
       this.hideElement(element);
     }
+  }
+
+  handleClassNameToggle(step) {
+    const toggleElements = Array.from(
+      step.querySelectorAll("[ct-form-toggleClass]"),
+    );
+
+    toggleElements.forEach((toggleElement) => {
+      const toggleClassAttr = toggleElement.getAttribute("ct-form-toggleClass");
+
+      if (toggleClassAttr) {
+        toggleElement.addEventListener("click", () => {
+          toggleElement.classList.toggle(toggleClassAttr);
+        });
+      }
+    });
   }
 }
