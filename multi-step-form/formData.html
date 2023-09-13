@@ -29,8 +29,9 @@
                     <input type="radio" name="q1" value="a" ct-form-data="q1_yes" />
                     Yes
                 </label>
+                <p />
                 <label>
-                    <input type="radio" name="q1" value="b" ct-form-data="q1_no" />
+                    <input type="radio" name="no_lable" value="b" ct-form-data="q1_no" />
                     No
                 </label>
 
@@ -115,43 +116,20 @@
 
             <div class="success-page" ct-form-card ct-form-item="step">
                 <h1>Form Submitted</h1>
-                <p>Thank you for submitting the form!</p>
 
-                <!-- <h3>You got:</h3>
-                <ul>
-                    <li>
-                        <span>Question 1: </span>
-                        <span ct-form-data-option='paris berlin' ct-form-hide="q1wrong">Wrong</span>
-                        <span ct-form-data-option='london' ct-form-hide="q1right">Right</span>
-                    </li>
-                    <li>
-                        <span>Question 2: </span>
-                        <span ct-form-data-option='earth saturn' ct-form-hide="q2wrong">Wrong</span>
-                        <span ct-form-data-option='jupiter' ct-form-hide="q2right">Right</span>
-                    </li>
-                    <li>
-                        <span>Question 3: </span>
-                        <span ct-form-data-option='mount_fuji mount_kilimanjaro' ct-form-hide="q3wrong">Wrong</span>
-                        <span ct-form-data-option='mount_everest' ct-form-hide="q3right">Right</span>
-                    </li>
-                </ul> -->
-
-                <div ct-form-hide="outgoing"
-                    ct-form-data-option='[{"condition": "q1_yes && q2_no && q3_yes", "action": "show"}]'>
+                <div ct-form-hide="outgoing" ct-form-data-option='q1_yes q2_no q3_yes || q1_yes q2_no q3_no'>
                     <h2>Outgoing</h2>
                     <p>your are likely an outgoing and sociable person</p>
                     <img src="" alt="" />
                 </div>
 
-                <div ct-form-hide="adventuros"
-                    ct-form-data-option='[{"condition": "q1_no && q2_yes && q3_yes", "action": "show"}]'>
+                <div ct-form-hide="adventuros" ct-form-data-option='q1_no q2_yes q3_yes || q1_no q2_yes q3_no'>
                     <h2>adventuros</h2>
                     <p>your are likely someone who enjoys.....</p>
                     <img src="" alt="" />
                 </div>
 
-                <div ct-form-hide="calm"
-                    ct-form-data-option='[{"condition": "q1_no && q2_no && q3_no", "action": "show"}]'>
+                <div ct-form-hide="calm" ct-form-data-option='q1_no q2_no q3_no || q1_yes q2_no q3_no'>
                     <h2>calm</h2>
                     <p>your are likely someone who is able to handle.....</p>
                     <img src="" alt="" />

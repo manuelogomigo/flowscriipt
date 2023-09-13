@@ -202,7 +202,7 @@ export class MultiStepForm {
     this.totalNumberDisplays = this.form.querySelectorAll(
       '[ct-form-number="total"]',
     );
-    this.dataValues = this.form.querySelectorAll("[ct-form-data]");
+    this.dataValues = Array.from(this.form.querySelectorAll("[ct-form-data]"));
     this.resetEnabled =
       this.form.getAttribute("ct-form-reset") === "true" ? true : false;
     this.submitRedirect = this.form.getAttribute("ct-form-redirect");
@@ -608,9 +608,9 @@ export class MultiStepForm {
     });
 
     // Loop through each step and handle ct-form-edit-step
-    // this.steps.forEach((step) => {
-    //   this.handleEditStepAttribute(step);
-    // });
+    this.steps.forEach((step) => {
+      this.handleEditStepAttribute(step);
+    });
 
     // Loop through each step and handle ct-form-check and ct-form-hide
     this.steps.forEach((step) => {
@@ -676,46 +676,44 @@ export class MultiStepForm {
     });
   }
 
-  // handleEditStepAttribute(step) {
-  //   const editStepElements = Array.from(
-  //     step.querySelectorAll("[ct-form-edit-step]"),
-  //   );
+  handleEditStepAttribute(step) {
+    const editStepElements = Array.from(
+      step.querySelectorAll("[ct-form-edit-step]"),
+    );
 
-  //   editStepElements.forEach((editStepElement) => {
-  //     const targetStepNumber = parseInt(
-  //       editStepElement.getAttribute("ct-form-edit-step"),
-  //     );
+    editStepElements.forEach((editStepElement) => {
+      const targetStepNumber = parseInt(
+        editStepElement.getAttribute("ct-form-edit-step"),
+      );
 
-  //     editStepElement.addEventListener("click", () => {
-  //       if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
-  //         const currentStepNumber = this.getStepNumber(step);
-  //         const stepsToMove = targetStepNumber - currentStepNumber;
-  //         let targetStepElement = step;
+      editStepElement.addEventListener("click", () => {
+        if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
+          const currentStepNumber = this.getStepNumber(step);
+          const stepsToMove = targetStepNumber - currentStepNumber;
+          let targetStepElement = step;
 
-  //         if (stepsToMove !== 0) {
-  //           if (stepsToMove > 0) {
-  //             for (let i = 0; i < stepsToMove; i++) {
-  //               targetStepElement = targetStepElement.nextElementSibling;
-  //             }
-  //           } else {
-  //             for (let i = 0; i > stepsToMove; i--) {
-  //               targetStepElement = targetStepElement.previousElementSibling;
-  //             }
-  //           }
-  //         }
+          if (stepsToMove !== 0) {
+            if (stepsToMove > 0) {
+              for (let i = 0; i < stepsToMove; i++) {
+                targetStepElement = targetStepElement.nextElementSibling;
+              }
+            } else {
+              for (let i = 0; i > stepsToMove; i--) {
+                targetStepElement = targetStepElement.previousElementSibling;
+              }
+            }
+          }
 
-  //         if (targetStepElement) {
-  //           const nextButton = step.querySelector('[ct-form-button="next"]');
-  //           if (nextButton) {
-  //             this.showNextStep(nextButton, step, targetStepElement);
-  //           }
-  //         }
-  //       }
-  //     });
-  //   });
-  // }
-
-  // handleFormCheckAndShow(step) {
+          if (targetStepElement) {
+            const nextButton = step.querySelector('[ct-form-button="next"]');
+            if (nextButton) {
+              this.showNextStep(nextButton, step, targetStepElement);
+            }
+          }
+        }
+      });
+    });
+  }
 
   handleFormCheckAndHide(step) {
     const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
@@ -741,7 +739,7 @@ export class MultiStepForm {
 
               // Check if there was a previously checked input
               if (prevUniqueValue) {
-                this.hideHideElement(prevUniqueValue);
+                this.hideElement(prevUniqueValue);
               }
 
               // Update the previously checked input
@@ -765,7 +763,7 @@ export class MultiStepForm {
         const childElements = stepElement.querySelectorAll("*");
 
         childElements.forEach((childElement) => {
-          childElement.style.display = "block";
+          childElement.style.display = "";
         });
       }
     });
@@ -783,32 +781,6 @@ export class MultiStepForm {
         childElements.forEach((childElement) => {
           childElement.style.display = "none";
           childElement.hidden = true;
-        });
-      }
-    });
-  }
-
-  handleLabelToggleClass(step) {
-    const labels = Array.from(
-      step.querySelectorAll("label[ct-form-toggleClass]"),
-    );
-
-    labels.forEach((label) => {
-      const input = label.querySelector(
-        'input[type="radio"], input[type="checkbox"]',
-      );
-      const toggleClassAttr = label.getAttribute("ct-form-toggleClass");
-
-      if (input && toggleClassAttr) {
-        input.addEventListener("input", () => {
-          if (input.type === "radio") {
-            labels.forEach((otherLabel) => {
-              if (otherLabel !== label) {
-                otherLabel.classList.remove(toggleClassAttr);
-              }
-            });
-          }
-          label.classList.add(toggleClassAttr);
         });
       }
     });
@@ -900,6 +872,8 @@ export class MultiStepForm {
     }
 
     this.showNextStep(lastStep, this.steps[0]);
+
+    this.initialize();
   }
 
   // setupConditionalDisplayLogic(step) {
@@ -1083,16 +1057,41 @@ export class MultiStepForm {
 
   //   dataOptions.forEach((option) => {
   //     const optionString = option.getAttribute("ct-form-data-option");
-  //     const optionValue = optionString.split(" ");
 
-  //     let shouldDisplayOption = true; // Initialize the flag to true
+  //     // Split the optionString by '||' to handle multiple conditions
+  //     const optionConditions = optionString.split("||");
 
-  //     dataValues.forEach((dataValue) => {
-  //       const dataValueName = dataValue.getAttribute("ct-form-data");
+  //     let shouldDisplayOption = false; // Initialize the flag to false
 
-  //       if (optionValue.includes(dataValueName) && !dataValue.checked) {
-  //         // If any required dataValue is not checked, hide the option
-  //         shouldDisplayOption = false;
+  //     optionConditions.forEach((optionCondition) => {
+  //       // Split the optionCondition by '&&' to handle multiple subconditions
+  //       const subConditions = optionCondition.trim().split("&&");
+
+  //       // Assume all subconditions are true
+  //       let subConditionsMet = true;
+
+  //       subConditions.forEach((subCondition) => {
+  //         // Split each subcondition by whitespace to get individual dataValueNames
+  //         const dataValueNames = subCondition.trim().split(" ");
+
+  //         // Check if all dataValueNames in a subcondition are in dataValues and checked
+  //         const subConditionMet = dataValueNames.every((dataValueName) =>
+  //           dataValues.some(
+  //             (dataValue) =>
+  //               dataValue.getAttribute("ct-form-data") === dataValueName &&
+  //               dataValue.checked,
+  //           ),
+  //         );
+
+  //         // If any subcondition is not met, set subConditionsMet to false
+  //         if (!subConditionMet) {
+  //           subConditionsMet = false;
+  //         }
+  //       });
+
+  //       // If all subconditions within an optionCondition are met, set shouldDisplayOption to true
+  //       if (subConditionsMet) {
+  //         shouldDisplayOption = true;
   //       }
   //     });
 
@@ -1104,6 +1103,140 @@ export class MultiStepForm {
   //   });
   // }
 
+  // handleDataValues(step) {
+  //   const dataOptions = Array.from(
+  //     step.querySelectorAll("[ct-form-data-option]"),
+  //   );
+  //   const { dataValues } = this;
+
+  //   dataOptions.forEach((option) => {
+  //     const optionString = option.getAttribute("ct-form-data-option");
+
+  //     // Split the optionString by '||' to handle multiple conditions
+  //     const optionConditions = optionString.split("||");
+
+  //     let shouldDisplayOption = true; // Initialize the flag to true
+
+  //     optionConditions.forEach((optionCondition) => {
+  //       // Split the optionCondition by '&&' to handle multiple subconditions
+  //       const subConditions = optionCondition.trim().split("&&");
+
+  //       // Assume all subconditions are true
+  //       let subConditionsMet = true;
+
+  //       subConditions.forEach((subCondition) => {
+  //         // Split each subcondition by whitespace to get individual dataValueNames
+  //         const dataValueNames = subCondition.trim().split(" ");
+
+  //         // Check if all dataValueNames in a subcondition are in dataValues and checked
+  //         const subConditionMet = dataValueNames.every((dataValueName) =>
+  //           dataValues.some(
+  //             (dataValue) =>
+  //               dataValue.getAttribute("ct-form-data") === dataValueName &&
+  //               dataValue.checked,
+  //           ),
+  //         );
+
+  //         // If any subcondition is not met, set subConditionsMet to false
+  //         if (!subConditionMet) {
+  //           subConditionsMet = false;
+  //         }
+  //       });
+
+  //       // If any subcondition within an optionCondition is met, set shouldDisplayOption to true
+  //       if (subConditionsMet) {
+  //         shouldDisplayOption = true;
+  //       }
+  //     });
+
+  //     if (shouldDisplayOption) {
+  //       this.showHideElement(option.getAttribute("ct-form-hide"));
+  //     } else {
+  //       this.hideElement(option.getAttribute("ct-form-hide"));
+  //     }
+  //   });
+  // }
+
+  // handleDataValues(step) {
+  //   const dataOptions = Array.from(
+  //     step.querySelectorAll("[ct-form-data-option]"),
+  //   );
+
+  //   dataOptions.forEach((option) => {
+  //     const optionString = option.getAttribute("ct-form-data-option");
+  //     this.processFormDataOption(optionString, option);
+  //   });
+  // }
+
+  // processFormDataOption(attributeValue, optionElement) {
+  //   const options = JSON.parse(attributeValue);
+
+  //   options.forEach((option) => {
+  //     const { condition } = option;
+  //     const { action } = option;
+
+  //     if (this.evaluateConditionalDisplayLogic(condition, this.dataValues)) {
+  //       this.displayAction(action, optionElement.getAttribute("ct-form-hide"));
+  //     } else {
+  //       if (action === "hide") {
+  //         this.displayAction(
+  //           "show",
+  //           optionElement.getAttribute("ct-form-hide"),
+  //         );
+  //       } else if (action === "show") {
+  //         this.displayAction(
+  //           "hide",
+  //           optionElement.getAttribute("ct-form-hide"),
+  //         );
+  //       }
+  //     }
+  //   });
+  // }
+
+  // evaluateConditionalDisplayLogic(condition, dataValues) {
+  //   const orConditions = condition.split("||"); // Split by logical OR
+  //   let result = false; // Initialize result to false since any true condition will make the result true
+
+  //   orConditions.forEach((orCondition) => {
+  //     const andConditions = orCondition.split("&&"); // Split by logical AND
+  //     let subConditionResult = true; // Initialize to true, as all conditions within an OR must be true
+
+  //     andConditions.forEach((component) => {
+  //       const trimmedComponent = component.trim();
+  //       const isChecked = this.checkVariable(dataValues, trimmedComponent);
+
+  //       // Update the subcondition result based on the evaluation of this component
+  //       subConditionResult = subConditionResult && isChecked;
+  //     });
+
+  //     // If any of the subconditions is true, set the result to true
+  //     if (subConditionResult) {
+  //       result = true;
+  //     }
+  //   });
+
+  //   return result;
+  // }
+
+  // // Function to check if a variable in dataValues is checked
+  // checkVariable(dataValues, variable) {
+  //   const dataValueList = [...dataValues].filter((data) => {
+  //     return data.getAttribute("ct-form-data") === variable;
+  //   });
+
+  //   const dataValue = dataValueList[0];
+
+  //   return dataValue.checked ? true : false;
+  // }
+
+  // displayAction(action, element) {
+  //   if (action === "show") {
+  //     this.showHideElement(element);
+  //   } else if (action === "hide") {
+  //     this.hideElement(element);
+  //   }
+  // }
+
   handleDataValues(step) {
     const dataOptions = Array.from(
       step.querySelectorAll("[ct-form-data-option]"),
@@ -1111,90 +1244,106 @@ export class MultiStepForm {
 
     dataOptions.forEach((option) => {
       const optionString = option.getAttribute("ct-form-data-option");
+
       this.processFormDataOption(optionString, option);
     });
   }
 
   processFormDataOption(attributeValue, optionElement) {
-    const options = JSON.parse(attributeValue);
+    const condition = this.evaluateConditionalDisplayLogic(
+      attributeValue,
+      this.dataValues,
+    );
 
-    options.forEach((option) => {
-      const { condition } = option;
-      const { action } = option;
+    if (condition) {
+      const showString = optionElement.getAttribute("ct-form-hide");
 
-      if (this.evaluateConditionalDisplayLogic(condition, this.dataValues)) {
-        this.displayAction(action, optionElement.getAttribute("ct-form-hide"));
-      } else {
-        if (action === "hide") {
-          this.displayAction(
-            "show",
-            optionElement.getAttribute("ct-form-hide"),
-          );
-        } else if (action === "show") {
-          this.displayAction(
-            "hide",
-            optionElement.getAttribute("ct-form-hide"),
-          );
-        }
-      }
-    });
+      this.showHideElement(showString);
+    }
   }
 
   evaluateConditionalDisplayLogic(condition, dataValues) {
-    const orConditions = condition.split("||"); // Split by logical OR
-    let result = false; // Initialize result to false since any true condition will make the result true
+    const orConditions = condition.split("||");
+    let result = false;
 
     orConditions.forEach((orCondition) => {
-      const andConditions = orCondition.split("&&"); // Split by logical AND
-      let subConditionResult = true; // Initialize to true, as all conditions within an OR must be true
+      const andConditions = orCondition.split("&&");
+      let subConditionResult = true;
 
       andConditions.forEach((component) => {
-        const trimmedComponent = component.trim();
-        const isChecked = this.checkVariable(dataValues, trimmedComponent);
+        // Use a regular expression to match individual variable names
+        const variableNames = component.match(/\S+/g);
 
-        // Update the subcondition result based on the evaluation of this component
-        subConditionResult = subConditionResult && isChecked;
+        if (variableNames) {
+          variableNames.forEach((variable) => {
+            const isChecked = this.checkVariable(dataValues, variable);
+
+            subConditionResult = subConditionResult && isChecked;
+          });
+        }
       });
 
-      // If any of the subconditions is true, set the result to true
       if (subConditionResult) {
-        result = true;
+        result = result || true;
       }
     });
 
     return result;
   }
 
-  // Function to check if a variable in dataValues is checked
   checkVariable(dataValues, variable) {
     const dataValueList = [...dataValues].filter((data) => {
-      return data.getAttribute("ct-form-data") === variable;
+      return data.getAttribute("ct-form-data") === variable ? data : null;
     });
+
+    if (dataValueList.length === 0) {
+      return false;
+    }
 
     const dataValue = dataValueList[0];
 
     return dataValue.checked ? true : false;
   }
 
-  displayAction(action, element) {
-    if (action === "show") {
-      this.showHideElement(element);
-    } else if (action === "hide") {
-      this.hideElement(element);
-    }
-  }
-
-  handleClassNameToggle(step) {
-    const toggleElements = Array.from(
-      step.querySelectorAll("[ct-form-toggleClass]"),
+  handleLabelToggleClass(step) {
+    const labels = Array.from(
+      step.querySelectorAll("label[ct-form-toggleClass]"),
     );
 
-    toggleElements.forEach((toggleElement) => {
-      const toggleClassAttr = toggleElement.getAttribute("ct-form-toggleClass");
+    labels.forEach((label) => {
+      const input = label.querySelector(
+        'input[type="radio"], input[type="checkbox"]',
+      );
+      const toggleClassAttr = label.getAttribute("ct-form-toggleClass");
 
-      if (toggleClassAttr) {
-        toggleElement.addEventListener("click", () => {
-          toggleElement.classList.toggle(toggleClassAttr);
+      if (input && toggleClassAttr) {
+        // Check if the input is checked on page load
+        if (input.checked) {
+          label.classList.add(toggleClassAttr); // Add the toggle class
+        }
+
+        input.addEventListener("input", function () {
+          if (input.type === "radio") {
+            const allRadioInputs = Array.from(
+              this.form.querySelectorAll(
+                `input[type="radio"][name="${input.name}"]`,
+              ),
+            );
+            allRadioInputs.forEach((radioInput) => {
+              const radioLabel = radioInput.parentElement;
+              if (radioInput.checked) {
+                radioLabel.classList.add(toggleClassAttr); // Add the toggle class
+              } else {
+                radioLabel.classList.remove(toggleClassAttr); // Remove the toggle class
+              }
+            });
+          } else if (input.type === "checkbox") {
+            if (input.checked) {
+              label.classList.add(toggleClassAttr); // Add the toggle class
+            } else {
+              label.classList.remove(toggleClassAttr); // Remove the toggle class
+            }
+          }
         });
       }
     });
