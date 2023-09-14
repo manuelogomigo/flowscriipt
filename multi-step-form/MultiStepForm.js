@@ -220,6 +220,30 @@ export class MultiStepForm {
     this.updateProgressLine(0);
     this.updatePercentDisplay(0);
     this.addFormEventListeners();
+    this.addStepsEventListeners();
+  }
+
+  addStepsEventListeners() {
+    this.steps.forEach((step) => {
+      step.addEventListener("change", () => {
+        this.handleSelectFormField(step);
+        this.handleFormField(step);
+        this.handleDataValues(step);
+      });
+
+      step.addEventListener("click", () => {
+        this.handleSelectFormField(step);
+      });
+
+      step.addEventListener("input", () => {
+        this.handleFormInput(step);
+      });
+
+      step.addEventListener("DOMContentLoaded", () => {
+        this.handleSelectFormField(step);
+        this.handleFormChange(step);
+      });
+    });
   }
 
   hideStepsExceptFirst() {
@@ -272,13 +296,6 @@ export class MultiStepForm {
 
   addFormEventListeners() {
     this.form.addEventListener("click", (event) => this.handleFormClick(event));
-    this.form.addEventListener("input", (event) => {
-      this.steps.forEach((step) => {
-        if (step.contains(event.target)) {
-          this.handleFormInput(step);
-        }
-      });
-    });
     this.form.addEventListener("keydown", (event) =>
       this.handleFormKeyDown(event),
     );
@@ -287,6 +304,8 @@ export class MultiStepForm {
       this.steps.forEach((step) => {
         this.handleDataValues(step);
       });
+
+      this.handleConditionalVisibility();
     });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -456,26 +475,32 @@ export class MultiStepForm {
     return checkedCount >= checkboxCount;
   }
 
+  // Function to handle automatic progression to the next step when radio inputs are clicked
   handleRadioAutoProgress(step) {
     const radioInputs = Array.from(
       step.querySelectorAll('input[type="radio"]'),
     );
 
+    // Check if the step has ct-form-radio="auto" attribute
     const radioAutoAttr = step.getAttribute("ct-form-radio");
     if (radioAutoAttr && radioAutoAttr.toLowerCase() === "auto") {
+      // Check if the step has ct-form-delay attribute, and set the delay time accordingly
       const delayAttr = step.getAttribute("ct-form-delay");
-      const radioDelay = !isNaN(parseInt(delayAttr))
-        ? parseInt(delayAttr)
-        : 1000;
+      if (delayAttr && !isNaN(parseInt(delayAttr))) {
+        this.radioDelay = parseInt(delayAttr);
+      } else {
+        this.radioDelay = 1000; // Default delay time in milliseconds
+      }
 
+      // Add click event listeners to all radio inputs in the step
       radioInputs.forEach((radioInput) => {
-        radioInput.addEventListener("click", () => {
+        radioInput.addEventListener("click", function () {
           setTimeout(() => {
             const nextButton = step.querySelector('[ct-form-button="next"]');
             if (nextButton) {
               nextButton.click();
             }
-          }, radioDelay);
+          }, this.radioDelay);
         });
       });
     }
@@ -622,9 +647,9 @@ export class MultiStepForm {
       this.handleLabelToggleClass(step);
     });
 
-    // Loop through each step and handle ct-form-toggleClass for buttons
+    // Loop through each step and handle ct-form-field
     // this.steps.forEach((step) => {
-    //   this.setupConditionalDisplayLogic(step);
+    //   // this.updateNextButtonOpacityOnInterval(step);
     // });
 
     // Set up automatic radio progression if enabled
@@ -656,6 +681,7 @@ export class MultiStepForm {
   handleFormField(step) {
     const formFields = Array.from(step.querySelectorAll("[ct-form-field]"));
 
+    // Add input event listeners to all elements with the ct-form-field attribute
     formFields.forEach((formField) => {
       const inputName = formField.getAttribute("ct-form-field");
 
@@ -663,15 +689,90 @@ export class MultiStepForm {
         const associatedInputs = Array.from(
           this.form.querySelectorAll(`[name="${inputName}"]`),
         );
+        if (associatedInputs.length > 0) {
+          // For radio inputs, handle change event to update text on selection
+          if (associatedInputs[0].type === "radio") {
+            // Function to set initial value for radio inputs
+            const setInitialRadioValue = () => {
+              const selectedRadioInput = associatedInputs.find(
+                (input) => input.checked,
+              );
+              if (selectedRadioInput) {
+                formField.textContent = selectedRadioInput.value;
+              }
+            };
 
-        associatedInputs.forEach((associatedInput) => {
-          associatedInput.addEventListener("input", () => {
-            this.updateFormFieldText(formField, associatedInputs);
-          });
-        });
+            // Call the function to set the initial value
+            setInitialRadioValue();
 
-        // Update the field text initially
-        this.updateFormFieldText(formField, associatedInputs);
+            // Add event listener for 'change' event on radio inputs
+            associatedInputs.forEach((radioInput) => {
+              radioInput.addEventListener("change", function () {
+                formField.textContent = radioInput.value;
+              });
+            });
+          } else if (associatedInputs[0].type === "checkbox") {
+            // For checkbox inputs, handle change event to show/hide formField
+            associatedInputs.forEach((checkboxInput) => {
+              checkboxInput.addEventListener("change", function () {
+                if (checkboxInput.checked) {
+                  formField.style.display = "block";
+                } else {
+                  formField.style.display = "none";
+                }
+              });
+            });
+
+            // Initially hide formField if no checkbox is checked
+            if (
+              !associatedInputs.some((checkboxInput) => checkboxInput.checked)
+            ) {
+              formField.style.display = "none";
+            }
+          } else {
+            // For other input types, handle input and change events to update text
+            associatedInputs.forEach((associatedInput) => {
+              associatedInput.addEventListener("input", updateFormFieldText);
+              associatedInput.addEventListener("change", updateFormFieldText);
+              associatedInput.addEventListener("focus", handleInputFocus);
+              associatedInput.addEventListener("blur", handleInputBlur);
+            });
+
+            // Initial update to display the current input value
+            updateFormFieldText();
+
+            // Set up a timer to periodically check for changes
+            const changeCheckInterval = 1000; // Adjust interval as needed (in milliseconds)
+            let changeCheckTimer;
+
+            // Function to handle input focus
+            const handleInputFocus = () => {
+              clearInterval(changeCheckTimer); // Clear the timer when input gains focus
+            };
+
+            // Function to handle input blur
+            const handleInputBlur = () => {
+              clearInterval(changeCheckTimer); // Clear the timer when input loses focus
+              changeCheckTimer = setInterval(
+                updateFormFieldText,
+                changeCheckInterval,
+              );
+            };
+
+            // Function to update the text content of the formField
+            const updateFormFieldText = () => {
+              const combinedValue = associatedInputs
+                .map((input) => input.value)
+                .join(", "); // Adjust this separator as needed
+              formField.textContent = combinedValue;
+            };
+
+            // Initialize the timer when the page loads
+            window.addEventListener("DOMContentLoaded", () => {
+              handleInputBlur();
+            });
+          }
+        }
       }
     });
   }
@@ -681,17 +782,22 @@ export class MultiStepForm {
       step.querySelectorAll("[ct-form-edit-step]"),
     );
 
+    // Add click event listeners to all elements with the ct-form-edit-step attribute
     editStepElements.forEach((editStepElement) => {
       const targetStepNumber = parseInt(
         editStepElement.getAttribute("ct-form-edit-step"),
       );
 
-      editStepElement.addEventListener("click", () => {
+      editStepElement.addEventListener("click", function () {
         if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
+          // Get the current step number
           const currentStepNumber = this.getStepNumber(step);
-          const stepsToMove = targetStepNumber - currentStepNumber;
-          let targetStepElement = step;
 
+          // Calculate the number of steps to move (positive/negative)
+          const stepsToMove = targetStepNumber - currentStepNumber;
+
+          // Find the target step element
+          let targetStepElement = step;
           if (stepsToMove !== 0) {
             if (stepsToMove > 0) {
               for (let i = 0; i < stepsToMove; i++) {
@@ -705,10 +811,8 @@ export class MultiStepForm {
           }
 
           if (targetStepElement) {
-            const nextButton = step.querySelector('[ct-form-button="next"]');
-            if (nextButton) {
-              this.showNextStep(nextButton, step, targetStepElement);
-            }
+            // Show the target step and hide the current step
+            this.showNextStep(editStepElement, step, targetStepElement);
           }
         }
       });
@@ -814,6 +918,7 @@ export class MultiStepForm {
       }
 
       if (this.validateStep(step)) {
+        this.handleRadioAutoProgress(step);
         this.updateNextButtonOpacity(nextButton, true);
       } else {
         this.updateNextButtonOpacity(nextButton, false);
@@ -849,21 +954,53 @@ export class MultiStepForm {
     const lastStep = this.steps[this.steps.length - 1];
 
     this.steps.forEach((step) => {
+      // Reset input fields
       const inputs = Array.from(step.querySelectorAll("input"));
-      const textareas = Array.from(step.querySelectorAll("textarea"));
-      const selects = Array.from(step.querySelectorAll("select"));
-
       inputs.forEach((input) => {
-        input.value = "";
-        input.checked = false;
+        switch (input.type) {
+          case "text":
+          case "password":
+          case "file":
+          case "hidden":
+          case "email":
+          case "search":
+          case "tel":
+          case "url":
+            input.value = "";
+            break;
+          case "checkbox":
+          case "radio":
+            input.checked = false;
+            break;
+          case "range":
+          case "number":
+            input.value = input.defaultValue || "0"; // or any other default value you prefer
+            break;
+        }
       });
 
+      // Reset textareas
+      const textareas = Array.from(step.querySelectorAll("textarea"));
       textareas.forEach((textarea) => {
         textarea.value = "";
       });
 
+      // Reset select elements
+      const selects = Array.from(step.querySelectorAll("select"));
       selects.forEach((select) => {
-        select.value = "";
+        select.selectedIndex = 0; // setting to the first option
+      });
+
+      // Clear any validation states or messages
+      const errorMessages = Array.from(step.querySelectorAll(".error-message"));
+      errorMessages.forEach((msg) => {
+        msg.textContent = ""; // clear error messages
+        msg.style.display = "none"; // hide error messages
+      });
+
+      const errorFields = Array.from(step.querySelectorAll(".error-field"));
+      errorFields.forEach((field) => {
+        field.classList.remove("error-field"); // remove error class from fields
       });
     });
 
@@ -872,32 +1009,8 @@ export class MultiStepForm {
     }
 
     this.showNextStep(lastStep, this.steps[0]);
-
     this.initialize();
   }
-
-  // setupConditionalDisplayLogic(step) {
-  //   const checkboxesSteps = Array.from(
-  //     step.querySelectorAll("[ct-form-checkbox-step]"),
-  //   );
-
-  //   checkboxesSteps.forEach((checkbox) => {
-  //     const checkboxValue = checkbox.getAttribute("ct-form-checkbox-step");
-  //     const nextButton = step.querySelector('[ct-form-button="next"]');
-
-  //     if (checkboxValue) {
-  //       nextButton.addEventListener("click", () => {
-  //         if (checkbox.checked) {
-  //           const nextStep = this.getStep(checkboxValue);
-
-  //           this.showNextStep(step, nextStep);
-  //         } else {
-  //           return;
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
 
   getStep(stepName) {
     const step = this.steps.find((step) => {
@@ -1049,194 +1162,6 @@ export class MultiStepForm {
     }
   }
 
-  // handleDataValues(step) {
-  //   const dataOptions = Array.from(
-  //     step.querySelectorAll("[ct-form-data-option]"),
-  //   );
-  //   const { dataValues } = this;
-
-  //   dataOptions.forEach((option) => {
-  //     const optionString = option.getAttribute("ct-form-data-option");
-
-  //     // Split the optionString by '||' to handle multiple conditions
-  //     const optionConditions = optionString.split("||");
-
-  //     let shouldDisplayOption = false; // Initialize the flag to false
-
-  //     optionConditions.forEach((optionCondition) => {
-  //       // Split the optionCondition by '&&' to handle multiple subconditions
-  //       const subConditions = optionCondition.trim().split("&&");
-
-  //       // Assume all subconditions are true
-  //       let subConditionsMet = true;
-
-  //       subConditions.forEach((subCondition) => {
-  //         // Split each subcondition by whitespace to get individual dataValueNames
-  //         const dataValueNames = subCondition.trim().split(" ");
-
-  //         // Check if all dataValueNames in a subcondition are in dataValues and checked
-  //         const subConditionMet = dataValueNames.every((dataValueName) =>
-  //           dataValues.some(
-  //             (dataValue) =>
-  //               dataValue.getAttribute("ct-form-data") === dataValueName &&
-  //               dataValue.checked,
-  //           ),
-  //         );
-
-  //         // If any subcondition is not met, set subConditionsMet to false
-  //         if (!subConditionMet) {
-  //           subConditionsMet = false;
-  //         }
-  //       });
-
-  //       // If all subconditions within an optionCondition are met, set shouldDisplayOption to true
-  //       if (subConditionsMet) {
-  //         shouldDisplayOption = true;
-  //       }
-  //     });
-
-  //     if (shouldDisplayOption) {
-  //       this.showHideElement(option.getAttribute("ct-form-hide"));
-  //     } else {
-  //       this.hideElement(option.getAttribute("ct-form-hide"));
-  //     }
-  //   });
-  // }
-
-  // handleDataValues(step) {
-  //   const dataOptions = Array.from(
-  //     step.querySelectorAll("[ct-form-data-option]"),
-  //   );
-  //   const { dataValues } = this;
-
-  //   dataOptions.forEach((option) => {
-  //     const optionString = option.getAttribute("ct-form-data-option");
-
-  //     // Split the optionString by '||' to handle multiple conditions
-  //     const optionConditions = optionString.split("||");
-
-  //     let shouldDisplayOption = true; // Initialize the flag to true
-
-  //     optionConditions.forEach((optionCondition) => {
-  //       // Split the optionCondition by '&&' to handle multiple subconditions
-  //       const subConditions = optionCondition.trim().split("&&");
-
-  //       // Assume all subconditions are true
-  //       let subConditionsMet = true;
-
-  //       subConditions.forEach((subCondition) => {
-  //         // Split each subcondition by whitespace to get individual dataValueNames
-  //         const dataValueNames = subCondition.trim().split(" ");
-
-  //         // Check if all dataValueNames in a subcondition are in dataValues and checked
-  //         const subConditionMet = dataValueNames.every((dataValueName) =>
-  //           dataValues.some(
-  //             (dataValue) =>
-  //               dataValue.getAttribute("ct-form-data") === dataValueName &&
-  //               dataValue.checked,
-  //           ),
-  //         );
-
-  //         // If any subcondition is not met, set subConditionsMet to false
-  //         if (!subConditionMet) {
-  //           subConditionsMet = false;
-  //         }
-  //       });
-
-  //       // If any subcondition within an optionCondition is met, set shouldDisplayOption to true
-  //       if (subConditionsMet) {
-  //         shouldDisplayOption = true;
-  //       }
-  //     });
-
-  //     if (shouldDisplayOption) {
-  //       this.showHideElement(option.getAttribute("ct-form-hide"));
-  //     } else {
-  //       this.hideElement(option.getAttribute("ct-form-hide"));
-  //     }
-  //   });
-  // }
-
-  // handleDataValues(step) {
-  //   const dataOptions = Array.from(
-  //     step.querySelectorAll("[ct-form-data-option]"),
-  //   );
-
-  //   dataOptions.forEach((option) => {
-  //     const optionString = option.getAttribute("ct-form-data-option");
-  //     this.processFormDataOption(optionString, option);
-  //   });
-  // }
-
-  // processFormDataOption(attributeValue, optionElement) {
-  //   const options = JSON.parse(attributeValue);
-
-  //   options.forEach((option) => {
-  //     const { condition } = option;
-  //     const { action } = option;
-
-  //     if (this.evaluateConditionalDisplayLogic(condition, this.dataValues)) {
-  //       this.displayAction(action, optionElement.getAttribute("ct-form-hide"));
-  //     } else {
-  //       if (action === "hide") {
-  //         this.displayAction(
-  //           "show",
-  //           optionElement.getAttribute("ct-form-hide"),
-  //         );
-  //       } else if (action === "show") {
-  //         this.displayAction(
-  //           "hide",
-  //           optionElement.getAttribute("ct-form-hide"),
-  //         );
-  //       }
-  //     }
-  //   });
-  // }
-
-  // evaluateConditionalDisplayLogic(condition, dataValues) {
-  //   const orConditions = condition.split("||"); // Split by logical OR
-  //   let result = false; // Initialize result to false since any true condition will make the result true
-
-  //   orConditions.forEach((orCondition) => {
-  //     const andConditions = orCondition.split("&&"); // Split by logical AND
-  //     let subConditionResult = true; // Initialize to true, as all conditions within an OR must be true
-
-  //     andConditions.forEach((component) => {
-  //       const trimmedComponent = component.trim();
-  //       const isChecked = this.checkVariable(dataValues, trimmedComponent);
-
-  //       // Update the subcondition result based on the evaluation of this component
-  //       subConditionResult = subConditionResult && isChecked;
-  //     });
-
-  //     // If any of the subconditions is true, set the result to true
-  //     if (subConditionResult) {
-  //       result = true;
-  //     }
-  //   });
-
-  //   return result;
-  // }
-
-  // // Function to check if a variable in dataValues is checked
-  // checkVariable(dataValues, variable) {
-  //   const dataValueList = [...dataValues].filter((data) => {
-  //     return data.getAttribute("ct-form-data") === variable;
-  //   });
-
-  //   const dataValue = dataValueList[0];
-
-  //   return dataValue.checked ? true : false;
-  // }
-
-  // displayAction(action, element) {
-  //   if (action === "show") {
-  //     this.showHideElement(element);
-  //   } else if (action === "hide") {
-  //     this.hideElement(element);
-  //   }
-  // }
-
   handleDataValues(step) {
     const dataOptions = Array.from(
       step.querySelectorAll("[ct-form-data-option]"),
@@ -1348,4 +1273,146 @@ export class MultiStepForm {
       }
     });
   }
+
+  handleSelectFormField(step) {
+    const selectFields = Array.from(
+      step.querySelectorAll("select[ct-form-field]"),
+    );
+
+    // Add change event listeners to all select fields with ct-form-field attribute
+    selectFields.forEach((selectField) => {
+      const targetElementId = selectField.getAttribute("ct-form-field");
+
+      if (targetElementId) {
+        const targetElement = document.getElementById(targetElementId);
+
+        if (targetElement) {
+          // Add event listener for 'change' event on select input
+          selectField.addEventListener("change", function () {
+            // Update the target element's content with the selected option value
+            const selectedOption =
+              selectField.options[selectField.selectedIndex];
+            targetElement.textContent = selectedOption.value;
+          });
+        }
+      }
+    });
+  }
+
+  handleConditionalVisibility() {
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    const labels = Array.from(
+      document.querySelectorAll("label[ct-form-conditional]"),
+    );
+    const dependentElements = Array.from(
+      document.querySelectorAll("[ct-form-dependent]"),
+    );
+    const selectFields = Array.from(
+      document.querySelectorAll("select[ct-form-conditional]"),
+    );
+
+    // Function to show the associated dependentElements
+    function showDependentElement(uniqueValue) {
+      const elementsToDisplay = document.querySelectorAll(
+        `[ct-form-dependent="${uniqueValue}"]`,
+      );
+      elementsToDisplay.forEach((element) => {
+        element.style.display = "inherit";
+      });
+    }
+
+    // Function to hide the associated dependentElements
+    function hideDependentElement(uniqueValue) {
+      const dependentElementsToHide = document.querySelectorAll(
+        `[ct-form-dependent="${uniqueValue}"]`,
+      );
+      dependentElementsToHide.forEach((element) => {
+        element.style.display = "none";
+      });
+    }
+
+    // Hide all elements with ct-form-dependent attribute onload
+    dependentElements.forEach((dependentElement) => {
+      dependentElement.style.display = "none";
+    });
+
+    // Add input event listeners to all radio inputs and checkboxes globally
+    const radioInputs = Array.from(
+      document.querySelectorAll('input[type="radio"]'),
+    );
+    const checkboxInputs = Array.from(
+      document.querySelectorAll('input[type="checkbox"]'),
+    );
+
+    radioInputs.forEach((radioInput) => {
+      const uniqueValue = radioInput.parentElement.getAttribute(
+        "ct-form-conditional",
+      );
+      radioInput.addEventListener("change", function () {
+        if (radioInput.checked) {
+          showDependentElement(uniqueValue);
+          // Hide other ct-form-dependent elements associated with unchecked radio buttons
+          radioInputs.forEach((input) => {
+            const otherUniqueValue = input.parentElement.getAttribute(
+              "ct-form-conditional",
+            );
+            if (otherUniqueValue !== uniqueValue) {
+              hideDependentElement(otherUniqueValue);
+            }
+          });
+        } else {
+          hideDependentElement(uniqueValue);
+        }
+      });
+    });
+
+    checkboxInputs.forEach((checkboxInput) => {
+      const uniqueValue = checkboxInput.parentElement.getAttribute(
+        "ct-form-conditional",
+      );
+      checkboxInput.addEventListener("change", function () {
+        if (checkboxInput.checked) {
+          showDependentElement(uniqueValue);
+        } else {
+          hideDependentElement(uniqueValue);
+        }
+      });
+    });
+
+    // Add change event listeners to all select fields with ct-form-conditional attribute
+    selectFields.forEach((selectField) => {
+      const selectedValue = selectField.value;
+      const uniqueValue = selectField.getAttribute("ct-form-conditional");
+
+      selectField.addEventListener("change", function () {
+        if (selectedValue === uniqueValue) {
+          showDependentElement(uniqueValue);
+        } else {
+          hideDependentElement(uniqueValue);
+        }
+      });
+    });
+  }
+
+  // updateNextButtonOpacityOnInterval(step) {
+  //   // Set an interval to periodically update the button opacity
+  //   const updateInterval = 1000; // 1 second interval, you can adjust this as needed
+  //   let updateTimer;
+
+  //   function updateOpacity() {
+  //     clearInterval(updateTimer); // Clear any existing interval
+  //     updateTimer = setInterval(() => {
+  //       this.updateNextButtonOpacity(step);
+  //     }, updateInterval);
+  //   }
+
+  //   // Add input event listeners to all inputs in the step
+  //   const inputs = Array.from(step.querySelectorAll("input, textarea"));
+  //   inputs.forEach((input) => {
+  //     input.addEventListener("input", updateOpacity);
+  //   });
+
+  //   // Start the interval when the step loads
+  //   updateOpacity();
+  // }
 }
