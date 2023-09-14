@@ -358,31 +358,35 @@ export class MultiStepForm {
   showNextStep(currentStep, nextStep) {
     currentStep.style.transition = "opacity 0.3s ease";
     currentStep.style.opacity = 0;
+    currentStep.style.display = "none";
 
+    // Wait for the transition to finish, then hide the current step and show the next one
     setTimeout(() => {
-      currentStep.style.display = "none";
       nextStep.style.display = "inherit";
-      nextStep.style.opacity = 0;
-
+      nextStep.style.opacity = 0; // Set opacity to 0 before showing
       this.updateStepNumber(this.getStepNumber(nextStep));
-      // this.updateNextButtonOpacity(nextStep);
+      this.updateNextButtonOpacity(nextStep);
       this.updateNextButtonVisibility(nextStep);
+      this.updateProgressLine(this.getStepNumber(nextStep) / this.totalSteps);
+      this.updatePercentDisplay(
+        (this.getStepNumber(nextStep) / this.totalSteps) * 100,
+      );
 
-      const progress = this.getStepNumber(nextStep) / this.totalSteps;
-      this.updateProgressLine(progress);
-      this.updatePercentDisplay(progress * 100);
-
-      nextStep.offsetHeight; // Trigger a reflow
+      // Trigger a reflow before applying the opacity transition to avoid animation issues
+      nextStep.offsetHeight;
 
       nextStep.style.transition = "opacity 0.3s ease";
-      nextStep.style.opacity = 1;
+      nextStep.style.opacity = 1; // Show the next step with smooth fade-in effect
 
+      // If ct-form-display attribute is present, set the display style for the next step
       const displayAttr = nextStep.getAttribute("ct-form-display");
       if (displayAttr) {
         nextStep.style.display = displayAttr;
       }
     }, 300);
   }
+
+  // Function to update the progress line width smoothly
 
   showPrevStep(currentStep, prevStep) {
     currentStep.style.transition = "opacity 0.3s ease";
@@ -788,7 +792,7 @@ export class MultiStepForm {
         editStepElement.getAttribute("ct-form-edit-step"),
       );
 
-      editStepElement.addEventListener("click", function () {
+      editStepElement.addEventListener("click", () => {
         if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
           // Get the current step number
           const currentStepNumber = this.getStepNumber(step);
@@ -812,7 +816,7 @@ export class MultiStepForm {
 
           if (targetStepElement) {
             // Show the target step and hide the current step
-            this.showNextStep(editStepElement, step, targetStepElement);
+            this.showNextStep(step, targetStepElement);
           }
         }
       });
