@@ -1,6 +1,3 @@
-
-
-/* eslint-disable prefer-destructuring */
 /* eslint-disable no-inner-declarations */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
@@ -8,13 +5,26 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector('[ct-form-mode="multi-step"]');
   const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
-  const totalSteps = steps.filter((step) => !step.hasAttribute("ct-form-card"))
-    .length;
-  const progressWrapper = document.querySelector(
-    '[ct-form-progress="wrapper"]'
+  const progressWrappers = Array.from(
+    form.querySelectorAll('[ct-form-progress="wrapper"]'),
   );
-  const progressLine = document.querySelector('[ct-form-progress="line"]');
-  const percentDisplay = document.querySelector('[ct-form-percent="current"]');
+  const progressLines = Array.from(
+    form.querySelectorAll('[ct-form-progress="line"]'),
+  );
+  const percentDisplays = Array.from(
+    form.querySelectorAll('[ct-form-percent="current"]'),
+  );
+  const currentNumberDisplays = Array.from(
+    form.querySelectorAll('[ct-form-number="current"]'),
+  );
+  const totalNumberDisplays = Array.from(
+    form.querySelectorAll('[ct-form-number="total"]'),
+  );
+
+  const totalSteps = steps.filter(
+    (step) => !step.hasAttribute("ct-form-card"),
+  ).length;
+
   let radioAutoEnabled = false;
   let radioDelay = 1000; // Default delay in milliseconds
 
@@ -29,11 +39,16 @@ document.addEventListener("DOMContentLoaded", function () {
         step.style.display = displayAttr;
       }
     }
+
+    // Update progress, percentages, and step numbers
+    updateStepNumber(index + 1, index); // Update step numbers
+    updateProgressLine(0, index); // Set initial progress line width
+    updatePercentDisplay(0, index); // Set initial current percentage
   });
 
   const totalNumberDisplay = document.querySelector('[ct-form-number="total"]');
   const currentNumberDisplay = document.querySelector(
-    '[ct-form-number="current"]'
+    '[ct-form-number="current"]',
   );
   updateStepNumber(1); // Set the initial current step number
   updateProgressLine(0); // Set the initial progress line width
@@ -42,16 +57,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to scroll to the top of the form
   function scrollToFormTop() {
     const form = document.querySelector('[ct-form-mode="multi-step"]');
-    const formPosition = form.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
+    const formContainer = form.parentElement; // Assuming the form is in a container div
+    const formPosition =
+      formContainer.getBoundingClientRect().top + window.scrollY;
+    formContainer.scrollTo({
       top: formPosition,
-      behavior: "smooth" // Use 'auto' for immediate scrolling
+      behavior: "smooth", // Use 'auto' for immediate scrolling
     });
   }
 
   // Add click event listener to the form
   form.addEventListener("click", function (event) {
-    let target = event.target;
+    let { target } = event;
 
     // If the clicked element is inside a link, get the closest link element
     if (
@@ -159,46 +176,68 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get the step number of a given step element
   function getStepNumber(step) {
     const nonCardSteps = steps.filter(
-      (step) => !step.hasAttribute("ct-form-card")
+      (step) => !step.hasAttribute("ct-form-card"),
     );
     return nonCardSteps.indexOf(step) + 1;
   }
 
-  // Update the current step number display
-  function updateStepNumber(stepNumber) {
-    if (currentNumberDisplay) {
-      currentNumberDisplay.textContent = `${stepNumber}`;
+  // Function to update step number for a specific step
+  function updateStepNumber(stepNumber, index) {
+    if (currentNumberDisplays[index]) {
+      currentNumberDisplays[index].textContent = `${stepNumber}`;
     }
-    if (totalNumberDisplay) {
-      totalNumberDisplay.textContent = `${totalSteps}`;
+    if (totalNumberDisplays[index]) {
+      totalNumberDisplays[index].textContent = `${totalSteps}`;
     }
   }
 
-  // Function to update the progress line width smoothly
-  function updateProgressLine(progress) {
-    if (progressLine) {
-      // Add a CSS transition for the width property to achieve the smooth effect
-      progressLine.style.transition = "width 1.2s ease";
-      progressLine.style.width = `${progress * 100}%`;
+  // Function to update progress line for a specific step
+  function updateProgressLine(progress, index) {
+    if (progressLines[index]) {
+      progressLines[index].style.transition = "width 1.2s ease";
+      progressLines[index].style.width = `${progress * 100}%`;
 
-      // Wait for the transition to finish, then remove the transition for future updates
       setTimeout(() => {
-        progressLine.style.transition = "";
+        progressLines[index].style.transition = "";
       }, 300);
     }
   }
 
-  // Update the current percentage display
-  function updatePercentDisplay(percentage) {
-    if (percentDisplay) {
-      percentDisplay.textContent = `${Math.round(percentage)}%`;
+  // Function to update percentage for a specific step
+  function updatePercentDisplay(percentage, index) {
+    if (percentDisplays[index]) {
+      percentDisplays[index].textContent = `${Math.round(percentage)}%`;
     }
+  }
+
+  // Function to validate radio inputs in a step
+  function validateRadioInputs(step) {
+    const radioGroups = Array.from(
+      step.querySelectorAll('input[type="radio"][required]'),
+    );
+
+    // Check each radio group for validation
+    for (const radioGroup of radioGroups) {
+      const groupName = radioGroup.name;
+      const radioButtons = Array.from(
+        step.querySelectorAll(`input[type="radio"][name="${groupName}"]`),
+      );
+
+      const checked = radioButtons.some((radioButton) => radioButton.checked);
+
+      if (!checked) {
+        // No radio button in the group is selected
+        return false;
+      }
+    }
+
+    return true; // All radio groups are validated
   }
 
   // Validate the inputs in a step
   function validateStep(step) {
     const inputs = Array.from(
-      step.querySelectorAll("input[required], textarea[required]")
+      step.querySelectorAll("input[required], textarea[required]"),
     );
 
     let valid = true;
@@ -215,7 +254,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    return valid && validateCheckboxes(step);
+    // Validate checkboxes
+    valid = valid && validateCheckboxes(step);
+
+    // Validate radio inputs
+    valid = valid && validateRadioInputs(step);
+
+    return valid;
   }
 
   // Helper function to validate email format
@@ -232,10 +277,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const checkboxes = Array.from(
-      step.querySelectorAll('input[type="checkbox"]')
+      step.querySelectorAll('input[type="checkbox"]'),
     );
-    const checkedCount = checkboxes.filter((checkbox) => checkbox.checked)
-      .length;
+    const checkedCount = checkboxes.filter(
+      (checkbox) => checkbox.checked,
+    ).length;
     return checkedCount >= checkboxCount;
   }
 
@@ -283,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get the currently displayed step
   function getCurrentStep() {
     return form.querySelector(
-      '[ct-form-item="step"]:not([style="display: none;"])'
+      '[ct-form-item="step"]:not([style="display: none;"])',
     );
   }
 
@@ -325,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to handle automatic progression to the next step when radio inputs are clicked
   function handleRadioAutoProgress(step) {
     const radioInputs = Array.from(
-      step.querySelectorAll('input[type="radio"]')
+      step.querySelectorAll('input[type="radio"]'),
     );
 
     // Check if the step has ct-form-radio="auto" attribute
@@ -356,30 +402,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to handle ct-form-conditional and ct-form-dependent attributes globally
   function handleConditionalVisibility() {
     const labels = Array.from(
-      document.querySelectorAll("label[ct-form-conditional]")
+      document.querySelectorAll("label[ct-form-conditional]"),
     );
     const dependentElements = Array.from(
-      document.querySelectorAll("[ct-form-dependent]")
+      document.querySelectorAll("[ct-form-dependent]"),
+    );
+    const selectFields = Array.from(
+      document.querySelectorAll("select[ct-form-conditional]"),
     );
 
-    // Function to show the associated dependentElement
+    // Function to show the associated dependentElements
     function showDependentElement(uniqueValue) {
-      const dependentElement = document.querySelector(
-        `[ct-form-dependent="${uniqueValue}"]`
+      const elementsToDisplay = document.querySelectorAll(
+        `[ct-form-dependent="${uniqueValue}"]`,
       );
-      if (dependentElement) {
-        dependentElement.style.display = "block";
-      }
+      elementsToDisplay.forEach((element) => {
+        element.style.display = "block";
+      });
     }
 
-    // Function to hide the associated dependentElement
+    // Function to hide the associated dependentElements
     function hideDependentElement(uniqueValue) {
-      const dependentElement = document.querySelector(
-        `[ct-form-dependent="${uniqueValue}"]`
+      const dependentElementsToHide = document.querySelectorAll(
+        `[ct-form-dependent="${uniqueValue}"]`,
       );
-      if (dependentElement) {
-        dependentElement.style.display = "none";
-      }
+      dependentElementsToHide.forEach((element) => {
+        element.style.display = "none";
+      });
     }
 
     // Hide all elements with ct-form-dependent attribute onload
@@ -389,15 +438,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add input event listeners to all radio inputs and checkboxes globally
     const radioInputs = Array.from(
-      document.querySelectorAll('input[type="radio"]')
+      document.querySelectorAll('input[type="radio"]'),
     );
     const checkboxInputs = Array.from(
-      document.querySelectorAll('input[type="checkbox"]')
+      document.querySelectorAll('input[type="checkbox"]'),
     );
 
     radioInputs.forEach((radioInput) => {
       const uniqueValue = radioInput.parentElement.getAttribute(
-        "ct-form-conditional"
+        "ct-form-conditional",
       );
       radioInput.addEventListener("change", function () {
         if (radioInput.checked) {
@@ -405,7 +454,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Hide other ct-form-dependent elements associated with unchecked radio buttons
           radioInputs.forEach((input) => {
             const otherUniqueValue = input.parentElement.getAttribute(
-              "ct-form-conditional"
+              "ct-form-conditional",
             );
             if (otherUniqueValue !== uniqueValue) {
               hideDependentElement(otherUniqueValue);
@@ -419,10 +468,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     checkboxInputs.forEach((checkboxInput) => {
       const uniqueValue = checkboxInput.parentElement.getAttribute(
-        "ct-form-conditional"
+        "ct-form-conditional",
       );
       checkboxInput.addEventListener("change", function () {
         if (checkboxInput.checked) {
+          showDependentElement(uniqueValue);
+        } else {
+          hideDependentElement(uniqueValue);
+        }
+      });
+    });
+
+    // Add change event listeners to all select fields with ct-form-conditional attribute
+    selectFields.forEach((selectField) => {
+      const selectedValue = selectField.value;
+      const uniqueValue = selectField.getAttribute("ct-form-conditional");
+
+      selectField.addEventListener("change", function () {
+        if (selectedValue === uniqueValue) {
           showDependentElement(uniqueValue);
         } else {
           hideDependentElement(uniqueValue);
@@ -437,12 +500,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to handle ct-form-toggleClass for labels
   function handleLabelToggleClass(step) {
     const labels = Array.from(
-      step.querySelectorAll("label[ct-form-toggleClass]")
+      step.querySelectorAll("label[ct-form-toggleClass]"),
     );
 
     labels.forEach((label) => {
       const input = label.querySelector(
-        'input[type="radio"], input[type="checkbox"]'
+        'input[type="radio"], input[type="checkbox"]',
       );
       const toggleClassAttr = label.getAttribute("ct-form-toggleClass");
 
@@ -455,7 +518,9 @@ document.addEventListener("DOMContentLoaded", function () {
         input.addEventListener("input", function () {
           if (input.type === "radio") {
             const allRadioInputs = Array.from(
-              form.querySelectorAll(`input[type="radio"][name="${input.name}"]`)
+              form.querySelectorAll(
+                `input[type="radio"][name="${input.name}"]`,
+              ),
             );
             allRadioInputs.forEach((radioInput) => {
               const radioLabel = radioInput.parentElement;
@@ -492,7 +557,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (inputName) {
         const associatedInputs = Array.from(
-          form.querySelectorAll(`[name="${inputName}"]`)
+          form.querySelectorAll(`[name="${inputName}"]`),
         );
         if (associatedInputs.length > 0) {
           // For radio inputs, handle change event to update text on selection
@@ -500,7 +565,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Function to set initial value for radio inputs
             function setInitialRadioValue() {
               const selectedRadioInput = associatedInputs.find(
-                (input) => input.checked
+                (input) => input.checked,
               );
               if (selectedRadioInput) {
                 formField.textContent = selectedRadioInput.value;
@@ -560,7 +625,7 @@ document.addEventListener("DOMContentLoaded", function () {
               clearInterval(changeCheckTimer); // Clear the timer when input loses focus
               changeCheckTimer = setInterval(
                 updateFormFieldText,
-                changeCheckInterval
+                changeCheckInterval,
               );
             }
 
@@ -587,16 +652,47 @@ document.addEventListener("DOMContentLoaded", function () {
     handleFormField(step);
   });
 
+  // Function to handle ct-form-field for select inputs
+  function handleSelectFormField(step) {
+    const selectFields = Array.from(
+      step.querySelectorAll("select[ct-form-field]"),
+    );
+
+    // Add change event listeners to all select fields with ct-form-field attribute
+    selectFields.forEach((selectField) => {
+      const targetElementId = selectField.getAttribute("ct-form-field");
+
+      if (targetElementId) {
+        const targetElement = document.getElementById(targetElementId);
+
+        if (targetElement) {
+          // Add event listener for 'change' event on select input
+          selectField.addEventListener("change", function () {
+            // Update the target element's content with the selected option value
+            const selectedOption =
+              selectField.options[selectField.selectedIndex];
+            targetElement.textContent = selectedOption.value;
+          });
+        }
+      }
+    });
+  }
+
+  // Call the function to handle ct-form-field for select inputs
+  steps.forEach((step) => {
+    handleSelectFormField(step);
+  });
+
   // Function to handle the ct-form-edit-step attribute
   function handleEditStepAttribute(step) {
     const editStepElements = Array.from(
-      step.querySelectorAll("[ct-form-edit-step]")
+      step.querySelectorAll("[ct-form-edit-step]"),
     );
 
     // Add click event listeners to all elements with the ct-form-edit-step attribute
     editStepElements.forEach((editStepElement) => {
       const targetStepNumber = parseInt(
-        editStepElement.getAttribute("ct-form-edit-step")
+        editStepElement.getAttribute("ct-form-edit-step"),
       );
 
       editStepElement.addEventListener("click", function () {
@@ -648,6 +744,4 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentStep = getCurrentStep();
     handleRadioAutoProgress(currentStep);
   }
-
 });
-

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- <script src="./testScript.js" type="module" defer></script> -->
+
+    <script src="./testScript.js" type="module" defer></script>
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>Multi-Step Form Test</title>
+</head>
+
+<body>
+    <div class="container">
+        <form action="submit" id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true">
+            <div class="step" ct-form-item="step">
+                <h2>Step 1</h2>
+                <label>
+                    Name:
+                    <input type="text" name="name">
+                </label>
+                <label>
+                    Email:
+                    <input type="email" name="email">
+                </label>
+                <br />
+
+                <label>
+                    <input type="checkbox" name="option" value="option1" ct-form-toggleclass="nameText">
+                    Name
+                </label>
+                <br />
+                <label>
+                    <input type="checkbox" name="option" value="option2" ct-form-toggleclass="addressText">
+                    Address
+                </label>
+                <br />
+
+
+                <div>
+                    <label class="nameText" ct-form-hide="nameText">
+                        Name Display
+                    </label>
+                    <label for="addressText" ct-form-hide="addressText">
+                        Address Display
+                    </label>
+                </div>
+
+                <button type="button" class="next-button">Next</button>
+            </div>
+
+
+        </form>
+
+    </div>
+
+    <!-- <script src="./testScript.js" type="module"></script> -->
+</body>
+
+</html>

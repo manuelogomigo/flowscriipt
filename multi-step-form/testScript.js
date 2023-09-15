@@ -1,7 +1,11 @@
 import { MultiStepForm } from "./MultiStepForm.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const multiStepForm = new MultiStepForm();
+  const forms = document.querySelectorAll('[ct-form-mode="multi-step"]');
 
-  multiStepForm.initialize();
+  forms.forEach((form) => {
+    const multiStepForm = new MultiStepForm(form);
+
+    multiStepForm.initialize();
+  });
 });
