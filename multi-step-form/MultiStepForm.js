@@ -29,6 +29,12 @@
  *
  * @method updatePercentDisplay
  * Updates the percentage display in the form based on the current step.
+ * @method showDependentElement
+ * Handles the display of dependent form elements based on specific criteria.
+ * @method hideDependentElement
+ * Handles the hiding of dependent form elements based on specific criteria.
+ * @method updateOpacity
+ * Updates the opacity for the provided element based on its visibility status.
  *
  * @method addFormEventListeners
  * Adds event listeners to the form for handling form interactions.
@@ -232,6 +238,9 @@ export class MultiStepForm {
       });
 
       step.addEventListener("click", () => {
+        // Prevent the event from bubbling up
+        // event.stopPropagation();
+
         this.handleSelectFormField(step);
       });
 
@@ -358,10 +367,10 @@ export class MultiStepForm {
   showNextStep(currentStep, nextStep) {
     currentStep.style.transition = "opacity 0.3s ease";
     currentStep.style.opacity = 0;
-    currentStep.style.display = "none";
 
     // Wait for the transition to finish, then hide the current step and show the next one
     setTimeout(() => {
+      currentStep.style.display = "none";
       nextStep.style.display = "inherit";
       nextStep.style.opacity = 0; // Set opacity to 0 before showing
       this.updateStepNumber(this.getStepNumber(nextStep));
@@ -651,11 +660,6 @@ export class MultiStepForm {
       this.handleLabelToggleClass(step);
     });
 
-    // Loop through each step and handle ct-form-field
-    // this.steps.forEach((step) => {
-    //   // this.updateNextButtonOpacityOnInterval(step);
-    // });
-
     // Set up automatic radio progression if enabled
     this.radioAutoEnabled = false;
     this.steps.forEach((step) => {
@@ -888,7 +892,6 @@ export class MultiStepForm {
 
         childElements.forEach((childElement) => {
           childElement.style.display = "none";
-          childElement.hidden = true;
         });
       }
     });
@@ -1011,6 +1014,8 @@ export class MultiStepForm {
     if (this.submitRedirect) {
       window.location = this.submitRedirect;
     }
+
+    this.form.reset();
 
     this.showNextStep(lastStep, this.steps[0]);
     this.initialize();
@@ -1185,9 +1190,20 @@ export class MultiStepForm {
     );
 
     if (condition) {
+      // Hide all elements that could potentially be shown based on the conditions
+      const allUniqueValues = Array.from(
+        optionElement.parentNode.querySelectorAll("[ct-form-data-option]"),
+      ).map((el) => el.getAttribute("ct-form-hide"));
       const showString = optionElement.getAttribute("ct-form-hide");
 
-      this.showHideElement(showString);
+      allUniqueValues.forEach((uniqueValue) => {
+        if (uniqueValue !== showString) {
+          this.hideElement(uniqueValue);
+        } else {
+          // Now, show the correct element
+          this.showHideElement(showString);
+        }
+      });
     }
   }
 
@@ -1316,6 +1332,7 @@ export class MultiStepForm {
     );
 
     // Function to show the associated dependentElements
+    // Handles the display of dependent form elements based on the provided criteria.
     function showDependentElement(uniqueValue) {
       const elementsToDisplay = document.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`,
@@ -1326,6 +1343,7 @@ export class MultiStepForm {
     }
 
     // Function to hide the associated dependentElements
+    // Handles the hiding of dependent form elements based on the provided criteria.
     function hideDependentElement(uniqueValue) {
       const dependentElementsToHide = document.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`,
@@ -1397,26 +1415,4 @@ export class MultiStepForm {
       });
     });
   }
-
-  // updateNextButtonOpacityOnInterval(step) {
-  //   // Set an interval to periodically update the button opacity
-  //   const updateInterval = 1000; // 1 second interval, you can adjust this as needed
-  //   let updateTimer;
-
-  //   function updateOpacity() {
-  //     clearInterval(updateTimer); // Clear any existing interval
-  //     updateTimer = setInterval(() => {
-  //       this.updateNextButtonOpacity(step);
-  //     }, updateInterval);
-  //   }
-
-  //   // Add input event listeners to all inputs in the step
-  //   const inputs = Array.from(step.querySelectorAll("input, textarea"));
-  //   inputs.forEach((input) => {
-  //     input.addEventListener("input", updateOpacity);
-  //   });
-
-  //   // Start the interval when the step loads
-  //   updateOpacity();
-  // }
 }
