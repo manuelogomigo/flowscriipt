@@ -1,3 +1,4 @@
+
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-inner-declarations */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -647,3 +648,4 @@ document.addEventListener("DOMContentLoaded", function () {
     handleRadioAutoProgress(currentStep);
   }
 });
+
