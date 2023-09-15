@@ -1,17 +1,30 @@
 /* eslint-disable no-inner-declarations */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector('[ct-form-mode="multi-step"]');
   const steps = Array.from(form.querySelectorAll('[ct-form-item="step"]'));
+  const progressWrappers = Array.from(
+    form.querySelectorAll('[ct-form-progress="wrapper"]'),
+  );
+  const progressLines = Array.from(
+    form.querySelectorAll('[ct-form-progress="line"]'),
+  );
+  const percentDisplays = Array.from(
+    form.querySelectorAll('[ct-form-percent="current"]'),
+  );
+  const currentNumberDisplays = Array.from(
+    form.querySelectorAll('[ct-form-number="current"]'),
+  );
+  const totalNumberDisplays = Array.from(
+    form.querySelectorAll('[ct-form-number="total"]'),
+  );
+
   const totalSteps = steps.filter(
     (step) => !step.hasAttribute("ct-form-card"),
   ).length;
-  const progressWrapper = document.querySelector(
-    '[ct-form-progress="wrapper"]',
-  );
-  const progressLine = document.querySelector('[ct-form-progress="line"]');
-  const percentDisplay = document.querySelector('[ct-form-percent="current"]');
+
   let radioAutoEnabled = false;
   let radioDelay = 1000; // Default delay in milliseconds
 
@@ -26,6 +39,11 @@ document.addEventListener("DOMContentLoaded", function () {
         step.style.display = displayAttr;
       }
     }
+
+    // Update progress, percentages, and step numbers
+    updateStepNumber(index + 1, index); // Update step numbers
+    updateProgressLine(0, index); // Set initial progress line width
+    updatePercentDisplay(0, index); // Set initial current percentage
   });
 
   const totalNumberDisplay = document.querySelector('[ct-form-number="total"]');
@@ -163,35 +181,57 @@ document.addEventListener("DOMContentLoaded", function () {
     return nonCardSteps.indexOf(step) + 1;
   }
 
-  // Update the current step number display
-  function updateStepNumber(stepNumber) {
-    if (currentNumberDisplay) {
-      currentNumberDisplay.textContent = `${stepNumber}`;
+  // Function to update step number for a specific step
+  function updateStepNumber(stepNumber, index) {
+    if (currentNumberDisplays[index]) {
+      currentNumberDisplays[index].textContent = `${stepNumber}`;
     }
-    if (totalNumberDisplay) {
-      totalNumberDisplay.textContent = `${totalSteps}`;
+    if (totalNumberDisplays[index]) {
+      totalNumberDisplays[index].textContent = `${totalSteps}`;
     }
   }
 
-  // Function to update the progress line width smoothly
-  function updateProgressLine(progress) {
-    if (progressLine) {
-      // Add a CSS transition for the width property to achieve the smooth effect
-      progressLine.style.transition = "width 1.2s ease";
-      progressLine.style.width = `${progress * 100}%`;
+  // Function to update progress line for a specific step
+  function updateProgressLine(progress, index) {
+    if (progressLines[index]) {
+      progressLines[index].style.transition = "width 1.2s ease";
+      progressLines[index].style.width = `${progress * 100}%`;
 
-      // Wait for the transition to finish, then remove the transition for future updates
       setTimeout(() => {
-        progressLine.style.transition = "";
+        progressLines[index].style.transition = "";
       }, 300);
     }
   }
 
-  // Update the current percentage display
-  function updatePercentDisplay(percentage) {
-    if (percentDisplay) {
-      percentDisplay.textContent = `${Math.round(percentage)}%`;
+  // Function to update percentage for a specific step
+  function updatePercentDisplay(percentage, index) {
+    if (percentDisplays[index]) {
+      percentDisplays[index].textContent = `${Math.round(percentage)}%`;
     }
+  }
+
+  // Function to validate radio inputs in a step
+  function validateRadioInputs(step) {
+    const radioGroups = Array.from(
+      step.querySelectorAll('input[type="radio"][required]'),
+    );
+
+    // Check each radio group for validation
+    for (const radioGroup of radioGroups) {
+      const groupName = radioGroup.name;
+      const radioButtons = Array.from(
+        step.querySelectorAll(`input[type="radio"][name="${groupName}"]`),
+      );
+
+      const checked = radioButtons.some((radioButton) => radioButton.checked);
+
+      if (!checked) {
+        // No radio button in the group is selected
+        return false;
+      }
+    }
+
+    return true; // All radio groups are validated
   }
 
   // Validate the inputs in a step
@@ -214,7 +254,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    return valid && validateCheckboxes(step);
+    // Validate checkboxes
+    valid = valid && validateCheckboxes(step);
+
+    // Validate radio inputs
+    valid = valid && validateRadioInputs(step);
+
+    return valid;
   }
 
   // Helper function to validate email format
@@ -371,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `[ct-form-dependent="${uniqueValue}"]`,
       );
       elementsToDisplay.forEach((element) => {
-        element.style.display = "inherit";
+        element.style.display = "block";
       });
     }
 

@@ -108,3 +108,11 @@ button {
   border-radius: 10px;
   transition: width 0.3s ease-in-out;
 }
+
+.backDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}

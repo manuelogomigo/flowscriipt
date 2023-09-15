@@ -63,6 +63,9 @@
  * @method validateCheckboxes
  * Validates the checkboxes in the current step by checking if the required number of checkboxes are checked.
  *
+ * @method validateRadioInputs
+ * Validates the radio inputs in the current step by checking if at least one radio input is selected for each group.
+ *
  * @method handleRadioAutoProgress
  * Handles automatic progression to the next step when a radio input is selected.
  *
@@ -235,6 +238,7 @@ export class MultiStepForm {
         this.handleSelectFormField(step);
         this.handleFormField(step);
         this.handleDataValues(step);
+        this.handleEditStepAttribute(step);
       });
 
       step.addEventListener("click", () => {
@@ -365,6 +369,21 @@ export class MultiStepForm {
   }
 
   showNextStep(currentStep, nextStep) {
+    // If currentStep is not provided, hide all steps except nextStep
+    if (!currentStep) {
+      this.steps.forEach((step) => {
+        if (step !== nextStep) {
+          step.style.display = "none";
+        }
+      });
+    } else {
+      currentStep.style.transition = "opacity 0.3s ease";
+      currentStep.style.opacity = 0;
+      setTimeout(() => {
+        currentStep.style.display = "none";
+      }, 300);
+    }
+
     currentStep.style.transition = "opacity 0.3s ease";
     currentStep.style.opacity = 0;
 
@@ -459,8 +478,9 @@ export class MultiStepForm {
       }
     });
 
-    // valid = this.validateInputs(step) && valid;
-    // valid = this.validateCheckboxes(step) && valid;
+    valid = this.validateInputs(step) && valid;
+    valid = this.validateCheckboxes(step) && valid;
+    valid = this.validateRadioInputs(step) && valid;
 
     return valid;
   }
@@ -486,6 +506,29 @@ export class MultiStepForm {
     ).length;
 
     return checkedCount >= checkboxCount;
+  }
+
+  validateRadioInputs(step) {
+    const radioGroups = Array.from(
+      step.querySelectorAll('input[type="radio"][required]'),
+    );
+
+    // Check each radio group for validation
+    for (const radioGroup of radioGroups) {
+      const groupName = radioGroup.name;
+      const radioButtons = Array.from(
+        step.querySelectorAll(`input[type="radio"][name="${groupName}"]`),
+      );
+
+      const checked = radioButtons.some((radioButton) => radioButton.checked);
+
+      if (!checked) {
+        // No radio button in the group is selected
+        return false;
+      }
+    }
+
+    return true; // All radio groups are validated
   }
 
   // Function to handle automatic progression to the next step when radio inputs are clicked
@@ -560,6 +603,7 @@ export class MultiStepForm {
                 this.updateFormFieldText(formField, associatedInputs);
                 this.validateInputs(step);
                 this.validateCheckboxes(step);
+                this.validateRadioInputs(step);
               });
 
               associatedInput.addEventListener("focus", () => {
@@ -795,8 +839,25 @@ export class MultiStepForm {
       const targetStepNumber = parseInt(
         editStepElement.getAttribute("ct-form-edit-step"),
       );
+      let ifStepCard = "";
 
       editStepElement.addEventListener("click", () => {
+        // If the current step is a ct-form-card, move to the nearest valid step
+        while (step && step.hasAttribute("ct-form-card")) {
+          if (
+            step.nextElementSibling &&
+            step.nextElementSibling.hasAttribute("ct-form-card")
+          ) {
+            ifStepCard = "next";
+          } else {
+            ifStepCard = "prev";
+          }
+
+          step = step.nextElementSibling
+            ? step.nextElementSibling
+            : step.previousElementSibling;
+        }
+
         if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
           // Get the current step number
           const currentStepNumber = this.getStepNumber(step);
@@ -808,19 +869,35 @@ export class MultiStepForm {
           let targetStepElement = step;
           if (stepsToMove !== 0) {
             if (stepsToMove > 0) {
-              for (let i = 0; i < stepsToMove; i++) {
-                targetStepElement = targetStepElement.nextElementSibling;
+              for (let i = 0; i < stepsToMove && targetStepElement; i++) {
+                do {
+                  targetStepElement = targetStepElement.nextElementSibling;
+                } while (
+                  targetStepElement &&
+                  targetStepElement.hasAttribute("ct-form-card")
+                );
               }
             } else {
-              for (let i = 0; i > stepsToMove; i--) {
-                targetStepElement = targetStepElement.previousElementSibling;
+              for (let i = 0; i > stepsToMove && targetStepElement; i--) {
+                do {
+                  targetStepElement = targetStepElement.previousElementSibling;
+                } while (
+                  targetStepElement &&
+                  targetStepElement.hasAttribute("ct-form-card")
+                );
               }
             }
           }
 
           if (targetStepElement) {
             // Show the target step and hide the current step
-            this.showNextStep(step, targetStepElement);
+            if (ifStepCard === "prev") {
+              this.showPrevStep(step.nextElementSibling, targetStepElement);
+            } else if (ifStepCard === "next") {
+              this.showNextStep(step.previousElementSibling, targetStepElement);
+            } else {
+              this.showNextStep(step, targetStepElement);
+            }
           }
         }
       });

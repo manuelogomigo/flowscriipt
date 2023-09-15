@@ -1,211 +1,86 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <!-- <script src="./testScript.js" type="module" defer></script> -->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiStep Form Showcase</title>
+    <link rel="stylesheet" href="style.css">
     <script src="./testScript.js" type="module" defer></script>
-    <link rel="stylesheet" href="./style.css" />
-
-    <title>Multi-Step Form Test</title>
+    <script src="testScript.js" defer></script>
 </head>
 
 <body>
-    <div class="container">
-        <form action="submit" id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true"
-            ct-form-redirect="https://github.com/">
-            <div class="step" ct-form-card ct-form-item="step" ct-form-display="flex">
-                <h1>TESTING MULTIFORM</h1>
+    <div class="ct-form" ct-form-mode="multi-step" ct-form-progress="line">
 
-                <div class="buttons">
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
-            </div>
+        <!-- Intro Card -->
+        <div class="ct-form-step" ct-form-card ct-form-display="flex">
+            <h2>Welcome</h2>
+            <p>This is an intro card. It won't count in the progress bar or step number.</p>
+            <span ct-form-button="next">Start</span>
+        </div>
 
-            <div class="step" id="step1" ct-form-item="step" ct-form-display="flex">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
+        <!-- Step 1 -->
+        <div class="ct-form-step" ct-form-item="step">
+            <h2>Step 1</h2>
+            <input type="checkbox" id="option1">
+            <label for="option1" ct-form-toggleclass="toggled">Option 1</label>
+            <input type="checkbox" id="option2">
+            <label for="option2" ct-form-toggleclass="toggled">Option 2</label>
+            <span ct-form-button="next">Next</span>
+            <div ct-form-field="option1">Selected Option 1</div>
+            <div ct-form-field="option2">Selected Option 2</div>
+        </div>
 
-                <div class="input-control">
-                    <label for="name">What's your company called?</label>
-                    <input type="text" id="name" name="name" ct-form-field="name" required
-                        ct-form-requiredMessage="This is required" />
-                    <span ct-form-error></span>
-                </div>
-                <br />
+        <!-- Step 2 -->
+        <div class="ct-form-step" ct-form-item="step" ct-form-display="flex" ct-form-radio="auto">
+            <h2>Step 2</h2>
+            <input type="radio" name="choice" id="choice1" ct-form-check="uniqueChoice1">
+            <label for="choice1" ct-form-toggleclass="toggled">Choice 1</label>
+            <input type="radio" name="choice" id="choice2" ct-form-check="uniqueChoice2">
+            <label for="choice2" ct-form-toggleclass="toggled">Choice 2</label>
+            <div ct-form-hide="uniqueChoice1">Choice 1 was selected!</div>
+            <div ct-form-hide="uniqueChoice2">Choice 2 was selected!</div>
+            <span ct-form-button="prev">Previous</span>
+            <span ct-form-button="next">Next</span>
+            <div ct-form-edit-step="1">Go back to Step 1</div>
+        </div>
 
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
+        <!-- Step 3 -->
+        <div class="ct-form-step" ct-form-item="step" ct-form-checkbox="2" ct-form-delay="2000">
+            <h2>Step 3</h2>
+            <input type="checkbox" id="check1" name="checks">
+            <label for="check1" ct-form-toggleclass="toggled">Check 1</label>
+            <input type="checkbox" id="check2" name="checks">
+            <label for="check2" ct-form-toggleclass="toggled">Check 2</label>
+            <input type="checkbox" id="check3" name="checks">
+            <label for="check3" ct-form-toggleclass="toggled">Check 3</label>
+            <span ct-form-button="prev">Previous</span>
+            <span ct-form-button="next">Next</span>
+        </div>
 
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
+        <!-- Step 4 -->
+        <div class="ct-form-step" ct-form-item="step">
+            <h2>Step 4</h2>
+            <input type="text" id="inputField">
+            <span ct-form-field="inputField"></span>
+            <span ct-form-button="prev">Previous</span>
+            <span ct-form-button="next">Next</span>
+        </div>
 
-            <div class="step" id="step7" ct-form-item="step" ct-form-display="flex" ct-form-reset="true">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
+        <!-- Final Step -->
+        <div class="ct-form-step" ct-form-item="step">
+            <h2>Final Step</h2>
+            <p>Review and Submit.</p>
+            <span ct-form-button="prev">Previous</span>
+            <span ct-form-button="submit">Submit</span>
+        </div>
 
-                <label>
-                    <input type="checkbox" name="option" value="option1" ct-form-options-tag="name"
-                        ct-form-options-input="Books">
-                    Option 1
-                </label>
-                <p ct-form-options-name="name"></p>
-                <br />
-                <label>
-                    <input type="radio" name="option" value="option2" ct-form-options-input="Movies">
-                    Option 2
-                </label>
-                <br />
-                <label>
-                    <input type="radio" name="option" value="option3" ct-form-options-input="Games">
-                    Option 3
-                </label>
-                <br />
-
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="step" id="step8" ct-form-item="step">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <label for="option" ct-form-option-label>Option Name:</label>
-                <input type="text" id="option" name="option" ct-form-field="option" />
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="step" id="step2" ct-form-item="step" ct-form-display="flex">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required ct-form-required="true" ct-form-field="email"
-                    ct-form-field="email" />
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" ct-form-required="false" ct-form-field="address" />
-                <br />
-                <label for="phone">Phone:</label>
-                <input type="tel" id="phone" name="phone" ct-form-required="true" ct-form-field="phone" />
-                <br />
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="button" class="next-button" ct-form-button="next">Next</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-
-
-            <div class="progress-percentage">
-                <span ct-form-percent="current">0</span>
-            </div>
-        </form>
-
-        <br />
-
-        <form action="submit" id="multi-step-form" ct-form-mode="multi-step" ct-form-reset="true">
-            <div class="step" id="step7" ct-form-item="step" ct-form-display="flex">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <label ct-form-check="name">
-                    <input type="checkbox" name="option" value="option1">
-                    Name
-                </label>
-
-                <label for="" ct-form-hide="name">Show Name</label>
-
-                <br />
-                <label ct-form-check="address">
-                    <input type="checkbox" name="option" value="option2">
-                    Address
-                </label>
-                <br />
-
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="submit" class="next-button" ct-form-button="next">Next</button>
-                </div>
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-            <div class="step" id="step2" ct-form-item="step">
-                <div class="progress-number">
-                    <span ct-form-number="current">1</span>/<span ct-form-number="total">3</span>
-                </div>
-
-                <div ct-form-hide="name">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" ct-form-field="name" />
-                    <br />
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" ct-form-field="email" />
-                    <br />
-                    <label for="phone">Phone:</label>
-                    <input type="tel" id="phone" name="phone" ct-form-field="phone" />
-                    <br />
-                </div>
-
-                <div ct-form-hide="address">
-                    <label for="address">Address:</label>
-                    <input type="text" id="address" name="address" ct-form-field="address" />
-                    <br />
-                    <label for="city">City:</label>
-                    <input type="text" id="city" name="city" ct-form-field="city" />
-                    <br />
-                    <label for="state">State:</label>
-                    <input type="text" id="state" name="state" ct-form-field="state" />
-                    <br />
-
-                </div>
-
-                <div class="buttons">
-                    <button type="button" class="prev-button" ct-form-button="prev">Previous</button>
-                    <button type="submit" class="next-button" ct-form-button="submit">Submit</button>
-                </div>
-
-
-                <div class="progress-bar" ct-form-progress="line">
-                    <div class="progress-bar-fill"></div>
-                </div>
-            </div>
-        </form>
-
+        <!-- Progress indicators -->
+        <div ct-form-number="current"></div>
+        <div ct-form-number="total"></div>
+        <div ct-form-percent="current"></div>
     </div>
-
-    <!-- <script src="./testScript.js" type="module"></script> -->
 </body>
 
 </html>
