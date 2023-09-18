@@ -116,3 +116,7 @@ button {
   align-items: center;
   width: 100%;
 }
+
+.testClass {
+  color: red;
+}

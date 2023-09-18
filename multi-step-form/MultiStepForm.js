@@ -713,10 +713,11 @@ export class MultiStepForm {
       }
     });
 
-    if (this.radioAutoEnabled) {
-      const currentStep = this.getCurrentStep();
-      this.handleRadioAutoProgress(currentStep);
-    }
+    this.steps.forEach((step) => {
+      if (this.radioAutoEnabled) {
+        this.handleRadioAutoProgress(step);
+      }
+    });
 
     // Handle automatic progression from the initial step to the next step
     if (this.autoProgressEnabled) {
@@ -853,9 +854,10 @@ export class MultiStepForm {
             ifStepCard = "prev";
           }
 
-          step = step.nextElementSibling
-            ? step.nextElementSibling
-            : step.previousElementSibling;
+          step =
+            step.nextElementSibling.getAttribute("ct-form-item") === "step"
+              ? step.nextElementSibling
+              : step.previousElementSibling;
         }
 
         if (!isNaN(targetStepNumber) && targetStepNumber > 0) {
@@ -891,9 +893,10 @@ export class MultiStepForm {
 
           if (targetStepElement) {
             // Show the target step and hide the current step
-            if (ifStepCard === "prev") {
+
+            if (ifStepCard == "prev") {
               this.showPrevStep(step.nextElementSibling, targetStepElement);
-            } else if (ifStepCard === "next") {
+            } else if (ifStepCard == "next") {
               this.showNextStep(step.previousElementSibling, targetStepElement);
             } else {
               this.showNextStep(step, targetStepElement);

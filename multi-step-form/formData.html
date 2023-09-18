@@ -16,7 +16,7 @@
             <h1>Form Quiz</h1>
             <p>Answer the following questions:</p>
 
-            <div class="question" ct-form-item="step">
+            <div class="question" ct-form-item="step" ct-form-checkbox="2">
                 <div class="progress-number">
                     <h2>
                         Question
@@ -38,6 +38,28 @@
 
                 <p ct-form-field="q1"></p>
 
+                <label ct-form-check="showDiv1" ct-form-toggleclass="testClass">
+                    <input type="checkbox" name="check" value="show1" ct-form-check="showdiv" />
+                    show1
+
+                </label>
+                <label ct-form-check="showDiv1" ct-form-toggleclass="testClass">
+                    <input type="checkbox" name="check" value="show2" ct-form-check="showdiv" />
+                    show2
+                </label>
+                <label ct-form-check="showDiv2" ct-form-toggleclass="testClass">
+                    <input type="checkbox" name="check" value="show3" ct-form-check="showdiv" />
+                    show3
+                </label>
+
+                <p ct-form-field="check">hello</p>
+
+                <div>
+                    <p ct-form-hide="showDiv1">Show Div 1</p>
+                    <p ct-form-hide="showDiv2">Show Div 2</p>
+                    <p ct-form-hide="showDiv3">Show Div 3</p>
+                </div>
+
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">
                         Previous
@@ -52,11 +74,12 @@
                 </div>
             </div>
 
-            <div class="question" ct-form-item="step">
+            <div class="question" ct-form-item="step" ct-form-radio="auto" ct-form-delay="2000">
                 <div class="progress-number">
                     <h2>
                         Question
-                        <span ct-form-number="current">1</span>
+                        <span ct-form-number="current">1</span>/
+                        <span ct-form-number="total" ct-form-edit-step="3">3</span>
                     </h2>
                     <p>Do you enjoy taking risks?</p>
                 </div>
@@ -88,7 +111,8 @@
                 <div class="progress-number">
                     <h2>
                         Question
-                        <span ct-form-number="current">1</span>
+                        <span ct-form-number="current">1</span>/
+                        <span ct-form-number="total" ct-form-edit-step="3">3</span>
                     </h2>
                     <p>Are you easily stressed out?</p>
                 </div>
@@ -151,7 +175,10 @@
                         Submit
                     </button>
                 </div>
+
             </div>
+
+            <div ct-form-percent="current"></div>
         </form>
     </div>
 
