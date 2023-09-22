@@ -911,39 +911,32 @@ export class MultiStepForm {
   }
 
   handleFormCheckAndHide(step) {
-    const labels = Array.from(step.querySelectorAll("label[ct-form-check]"));
     const hideElements = Array.from(step.querySelectorAll("[ct-form-hide]"));
 
+    // Initially hide all elements with the ct-form-hide attribute
     hideElements.forEach((hideElement) => {
       hideElement.style.display = "none";
     });
 
-    labels.forEach((label) => {
-      const input = label.querySelector(
-        'input[type="radio"], input[type="checkbox"]',
-      );
-      const uniqueValue = label.getAttribute("ct-form-check");
+    // Attach a single "change" event listener to the step element
+    step.addEventListener("change", (event) => {
+      const { target } = event;
 
-      let prevUniqueValue = null;
+      // Check if the event's target is an input of type "radio" or "checkbox"
+      if (
+        (target.tagName === "INPUT" && target.type === "radio") ||
+        (target.tagName === "INPUT" && target.type === "checkbox")
+      ) {
+        const uniqueValue = target
+          .closest("label")
+          .getAttribute("ct-form-check");
 
-      if (input && uniqueValue) {
-        input.addEventListener("change", () => {
-          if (input.type === "radio" || input.type === "checkbox") {
-            if (input.checked) {
-              this.showHideElement(uniqueValue);
-
-              // Check if there was a previously checked input
-              if (prevUniqueValue) {
-                this.hideElement(prevUniqueValue);
-              }
-
-              // Update the previously checked input
-              prevUniqueValue = uniqueValue;
-            } else {
-              this.hideElement(uniqueValue);
-            }
-          }
-        });
+        // Depending on whether the input is checked or not, show or hide the appropriate element
+        if (target.checked) {
+          this.showHideElement(uniqueValue);
+        } else {
+          this.hideElement(uniqueValue);
+        }
       }
     });
   }
