@@ -218,7 +218,6 @@ export class MultiStepForm {
     this.optionInputs = this.form.querySelectorAll("[ct-form-options-input]");
 
     this.radioAutoEnabled = false;
-    this.radioDelay = 1000; // Default delay in
 
     this.initialize();
   }
@@ -369,19 +368,9 @@ export class MultiStepForm {
   }
 
   showNextStep(currentStep, nextStep) {
-    // If currentStep is not provided, hide all steps except nextStep
-    if (!currentStep) {
-      this.steps.forEach((step) => {
-        if (step !== nextStep) {
-          step.style.display = "none";
-        }
-      });
-    } else {
-      currentStep.style.transition = "opacity 0.3s ease";
-      currentStep.style.opacity = 0;
-      setTimeout(() => {
-        currentStep.style.display = "none";
-      }, 300);
+    let radioDelay;
+    if (currentStep.hasAttribute("ct-form-delay")) {
+      radioDelay = parseInt(currentStep.getAttribute("ct-form-delay"), 10);
     }
 
     currentStep.style.transition = "opacity 0.3s ease";
@@ -411,12 +400,17 @@ export class MultiStepForm {
       if (displayAttr) {
         nextStep.style.display = displayAttr;
       }
-    }, 300);
+    }, radioDelay || 1000);
   }
 
   // Function to update the progress line width smoothly
 
   showPrevStep(currentStep, prevStep) {
+    let radioDelay;
+    if (currentStep.hasAttribute("ct-form-delay")) {
+      radioDelay = parseInt(currentStep.getAttribute("ct-form-delay"), 10);
+    }
+
     currentStep.style.transition = "opacity 0.3s ease";
     currentStep.style.opacity = 0;
 
@@ -444,7 +438,7 @@ export class MultiStepForm {
       if (displayAttr) {
         prevStep.style.display = displayAttr;
       }
-    }, 300);
+    }, radioDelay || 1000);
   }
 
   scrollToTopOfForm() {
@@ -533,6 +527,11 @@ export class MultiStepForm {
 
   // Function to handle automatic progression to the next step when radio inputs are clicked
   handleRadioAutoProgress(step) {
+    let radioDelay;
+    if (step.hasAttribute("ct-form-delay")) {
+      radioDelay = parseInt(step.getAttribute("ct-form-delay"), 10);
+    }
+
     const radioInputs = Array.from(
       step.querySelectorAll('input[type="radio"]'),
     );
@@ -543,9 +542,9 @@ export class MultiStepForm {
       // Check if the step has ct-form-delay attribute, and set the delay time accordingly
       const delayAttr = step.getAttribute("ct-form-delay");
       if (delayAttr && !isNaN(parseInt(delayAttr))) {
-        this.radioDelay = parseInt(delayAttr);
+        radioDelay = parseInt(delayAttr);
       } else {
-        this.radioDelay = 1000; // Default delay time in milliseconds
+        radioDelay = 1000; // Default delay time in milliseconds
       }
 
       // Add click event listeners to all radio inputs in the step
@@ -556,7 +555,7 @@ export class MultiStepForm {
             if (nextButton) {
               nextButton.click();
             }
-          }, this.radioDelay);
+          }, radioDelay);
         });
       });
     }
@@ -704,6 +703,10 @@ export class MultiStepForm {
       this.handleLabelToggleClass(step);
     });
 
+    this.steps.forEach((step) => {
+      this.handleSelectFormField(step);
+    });
+
     // Set up automatic radio progression if enabled
     this.radioAutoEnabled = false;
     this.steps.forEach((step) => {
@@ -783,17 +786,6 @@ export class MultiStepForm {
               formField.style.display = "none";
             }
           } else {
-            // For other input types, handle input and change events to update text
-            associatedInputs.forEach((associatedInput) => {
-              associatedInput.addEventListener("input", updateFormFieldText);
-              associatedInput.addEventListener("change", updateFormFieldText);
-              associatedInput.addEventListener("focus", handleInputFocus);
-              associatedInput.addEventListener("blur", handleInputBlur);
-            });
-
-            // Initial update to display the current input value
-            updateFormFieldText();
-
             // Set up a timer to periodically check for changes
             const changeCheckInterval = 1000; // Adjust interval as needed (in milliseconds)
             let changeCheckTimer;
@@ -819,6 +811,17 @@ export class MultiStepForm {
                 .join(", "); // Adjust this separator as needed
               formField.textContent = combinedValue;
             };
+
+            // Initial update to display the current input value
+            updateFormFieldText();
+
+            // For other input types, handle input and change events to update text
+            associatedInputs.forEach((associatedInput) => {
+              associatedInput.addEventListener("input", updateFormFieldText);
+              associatedInput.addEventListener("change", updateFormFieldText);
+              associatedInput.addEventListener("focus", handleInputFocus);
+              associatedInput.addEventListener("blur", handleInputBlur);
+            });
 
             // Initialize the timer when the page loads
             window.addEventListener("DOMContentLoaded", () => {

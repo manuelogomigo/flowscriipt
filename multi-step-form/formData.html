@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="question" ct-form-item="step" ct-form-radio="auto" ct-form-delay="2000">
+            <div class="question" ct-form-item="step" ct-form-radio="auto" ct-form-delay="1000">
                 <div class="progress-number">
                     <h2>
                         Question
@@ -125,6 +125,13 @@
                     <input type="radio" name="q3" ct-form-data="q3_no" />
                     No
                 </label>
+
+                <select name="cars" id="cars">
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                </select>
+
+                <p ct-form-field="cars">toyota</p>
 
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">
