@@ -2,9 +2,10 @@
 <html>
 
 <head>
-    <!-- <script src="./testScript.js" type="module" defer></script> -->
 
     <script src="./testScript.js" type="module" defer></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/manuelogomigo/flowscriipt@features/multi-step-form/testScript.js"
+        type="module" defer></script> -->
     <link rel="stylesheet" href="./formDataStyle.css" />
 
     <title>Multi-Step Form Test</title>
@@ -16,12 +17,12 @@
             <h1>Form Quiz</h1>
             <p>Answer the following questions:</p>
 
-            <div class="question" ct-form-item="step" ct-form-checkbox="2">
+            <div class="question" ct-form-item="step" ct-form-checkbox="2" ct-form-display="grid">
                 <div class="progress-number">
                     <h2>
                         Question
                         <span ct-form-number="current">1</span>/
-                        <span ct-form-number="total" ct-form-edit-step="3">3</span>
+                        <span ct-form-number="total" ct-form-edit-step="2">3</span>
                     </h2>
                     <p>Are you a social person?</p>
                 </div>
@@ -37,6 +38,7 @@
                 </label>
 
                 <p ct-form-field="q1"></p>
+
 
                 <label ct-form-check="showDiv1" ct-form-toggleclass="testClass">
                     <input type="checkbox" name="check" value="show1" ct-form-check="showdiv" />
@@ -60,6 +62,14 @@
                     <p ct-form-hide="showDiv3">Show Div 3</p>
                 </div>
 
+                <select ct-form-field="targetElementId">
+                    <option value="volvo5">Volvo</option>
+                    <option value="bmw5">BMW</option>
+                </select>
+
+                <div id="targetElementId">test</div>
+
+
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">
                         Previous
@@ -74,7 +84,8 @@
                 </div>
             </div>
 
-            <div class="question" ct-form-item="step" ct-form-radio="auto" ct-form-delay="1000">
+            <div class="question" ct-form-card ct-form-item="step" ct-form-radio="auto" ct-form-delay="1000"
+                ct-form-display="grid">
                 <div class="progress-number">
                     <h2>
                         Question
@@ -92,6 +103,16 @@
                     <input type="radio" name="q2" ct-form-data="q2_no" />
                     No
                 </label>
+
+                <div>
+                    <input type="radio" ct-form-check="checkRadio1" name="check" />
+                    <input type="radio" ct-form-check="checkRadio2" name="check" />
+                    <input type="radio" ct-form-check="checkRadio3" name="check" />
+                </div>
+
+                <p ct-form-hide="checkRadio1">checkRadio1</p>
+                <p ct-form-hide="checkRadio2">checkRadio2</p>
+                <p ct-form-hide="checkRadio3">checkRadio3</p>
 
                 <div class="buttons">
                     <button type="button" class="prev-button" ct-form-button="prev">

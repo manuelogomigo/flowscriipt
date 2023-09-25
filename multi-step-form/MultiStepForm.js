@@ -373,11 +373,10 @@ export class MultiStepForm {
       radioDelay = parseInt(currentStep.getAttribute("ct-form-delay"), 10);
     }
 
-    currentStep.style.transition = "opacity 0.3s ease";
-    currentStep.style.opacity = 0;
-
     // Wait for the transition to finish, then hide the current step and show the next one
     setTimeout(() => {
+      currentStep.style.transition = "opacity 1.5s ease";
+      currentStep.style.opacity = 0;
       currentStep.style.display = "none";
       nextStep.style.display = "inherit";
       nextStep.style.opacity = 0; // Set opacity to 0 before showing
@@ -392,7 +391,7 @@ export class MultiStepForm {
       // Trigger a reflow before applying the opacity transition to avoid animation issues
       nextStep.offsetHeight;
 
-      nextStep.style.transition = "opacity 0.3s ease";
+      nextStep.style.transition = "opacity 1.3s ease";
       nextStep.style.opacity = 1; // Show the next step with smooth fade-in effect
 
       // If ct-form-display attribute is present, set the display style for the next step
@@ -411,10 +410,9 @@ export class MultiStepForm {
       radioDelay = parseInt(currentStep.getAttribute("ct-form-delay"), 10);
     }
 
-    currentStep.style.transition = "opacity 0.3s ease";
-    currentStep.style.opacity = 0;
-
     setTimeout(() => {
+      currentStep.style.transition = "opacity 0.3s ease";
+      currentStep.style.opacity = 0;
       currentStep.style.display = "none";
       prevStep.style.display = "inherit";
       prevStep.style.opacity = 0;
@@ -667,7 +665,9 @@ export class MultiStepForm {
     // Set initial progress line width on page load
     const firstStep = this.steps[0];
     this.updateProgressLine(this.getStepNumber(firstStep) / this.totalSteps);
-    this.updatePercentDisplay(0); // Set the initial current percentage
+    this.updatePercentDisplay(
+      (this.getStepNumber(firstStep) / this.totalSteps) * 100,
+    ); // Set the initial current percentage
 
     // Set up a timer for updating field values
     this.changeCheckInterval = 1000; // Adjust interval as needed (in milliseconds)
@@ -915,7 +915,7 @@ export class MultiStepForm {
 
     // Initially hide all elements with the ct-form-hide attribute
     hideElements.forEach((hideElement) => {
-      hideElement.style.display = "none";
+      this.hideElement(hideElement.getAttribute("ct-form-hide"));
     });
 
     // Attach a single "change" event listener to the step element
@@ -927,6 +927,19 @@ export class MultiStepForm {
         (target.tagName === "INPUT" && target.type === "radio") ||
         (target.tagName === "INPUT" && target.type === "checkbox")
       ) {
+        // If it's a radio button, hide elements associated with all other radio buttons in the same group
+        if (target.type === "radio") {
+          const radioGroup = step.querySelectorAll(
+            `input[name="${target.name}"]`,
+          );
+          radioGroup.forEach((radio) => {
+            const uniqueValue = radio
+              .closest("label")
+              .getAttribute("ct-form-check");
+            this.hideElement(uniqueValue);
+          });
+        }
+
         const uniqueValue = target
           .closest("label")
           .getAttribute("ct-form-check");
@@ -977,6 +990,18 @@ export class MultiStepForm {
     const nonCardSteps = this.steps.filter(
       (step) => !step.hasAttribute("ct-form-card"),
     );
+
+    // If the provided step has the ct-form-card attribute, find the last previous step without it
+    if (step.hasAttribute("ct-form-card")) {
+      const currentIndex = this.steps.indexOf(step);
+      for (let i = currentIndex - 1; i >= 0; i--) {
+        if (!this.steps[i].hasAttribute("ct-form-card")) {
+          return nonCardSteps.indexOf(this.steps[i]) + 1;
+        }
+      }
+      return -1; // return -1 or some default value if no previous non-card step is found
+    }
+
     return nonCardSteps.indexOf(step) + 1;
   }
 
@@ -987,9 +1012,9 @@ export class MultiStepForm {
 
     if (prevButton) {
       if (this.getStepNumber(step) === 1) {
-        prevButton.style.display = "none";
+        this.updateNextButtonOpacity(prevButton, false);
       } else {
-        prevButton.style.display = "inline-block";
+        this.updateNextButtonOpacity(prevButton, true);
       }
     }
 
@@ -1383,6 +1408,8 @@ export class MultiStepForm {
         const targetElement = document.getElementById(targetElementId);
 
         if (targetElement) {
+          targetElement.textContent = selectField.value;
+
           // Add event listener for 'change' event on select input
           selectField.addEventListener("change", function () {
             // Update the target element's content with the selected option value
@@ -1398,19 +1425,19 @@ export class MultiStepForm {
   handleConditionalVisibility() {
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     const labels = Array.from(
-      document.querySelectorAll("label[ct-form-conditional]"),
+      this.form.querySelectorAll("label[ct-form-conditional]"),
     );
     const dependentElements = Array.from(
-      document.querySelectorAll("[ct-form-dependent]"),
+      this.form.querySelectorAll("[ct-form-dependent]"),
     );
     const selectFields = Array.from(
-      document.querySelectorAll("select[ct-form-conditional]"),
+      this.form.querySelectorAll("select[ct-form-conditional]"),
     );
 
     // Function to show the associated dependentElements
     // Handles the display of dependent form elements based on the provided criteria.
     function showDependentElement(uniqueValue) {
-      const elementsToDisplay = document.querySelectorAll(
+      const elementsToDisplay = this.form.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`,
       );
       elementsToDisplay.forEach((element) => {
@@ -1421,7 +1448,7 @@ export class MultiStepForm {
     // Function to hide the associated dependentElements
     // Handles the hiding of dependent form elements based on the provided criteria.
     function hideDependentElement(uniqueValue) {
-      const dependentElementsToHide = document.querySelectorAll(
+      const dependentElementsToHide = this.form.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`,
       );
       dependentElementsToHide.forEach((element) => {
@@ -1436,10 +1463,10 @@ export class MultiStepForm {
 
     // Add input event listeners to all radio inputs and checkboxes globally
     const radioInputs = Array.from(
-      document.querySelectorAll('input[type="radio"]'),
+      this.form.querySelectorAll('input[type="radio"]'),
     );
     const checkboxInputs = Array.from(
-      document.querySelectorAll('input[type="checkbox"]'),
+      this.form.querySelectorAll('input[type="checkbox"]'),
     );
 
     radioInputs.forEach((radioInput) => {
