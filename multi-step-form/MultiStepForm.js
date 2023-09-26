@@ -927,28 +927,31 @@ export class MultiStepForm {
         (target.tagName === "INPUT" && target.type === "radio") ||
         (target.tagName === "INPUT" && target.type === "checkbox")
       ) {
-        // If it's a radio button, hide elements associated with all other radio buttons in the same group
+        // If it's a radio button, handle its behavior
         if (target.type === "radio") {
           const radioGroup = step.querySelectorAll(
             `input[name="${target.name}"]`,
           );
           radioGroup.forEach((radio) => {
-            const uniqueValue = radio
-              .closest("label")
-              .getAttribute("ct-form-check");
-            this.hideElement(uniqueValue);
+            const uniqueValue =
+              radio.parentElement.getAttribute("ct-form-check");
+            if (radio === target && target.checked) {
+              this.showHideElement(uniqueValue);
+            } else {
+              this.hideElement(uniqueValue);
+            }
           });
-        }
-
-        const uniqueValue = target
-          .closest("label")
-          .getAttribute("ct-form-check");
-
-        // Depending on whether the input is checked or not, show or hide the appropriate element
-        if (target.checked) {
-          this.showHideElement(uniqueValue);
         } else {
-          this.hideElement(uniqueValue);
+          // For checkboxes
+          const uniqueValue = target
+            .closest("label")
+            .getAttribute("ct-form-check");
+          // Depending on whether the input is checked or not, show or hide the appropriate element
+          if (target.checked) {
+            this.showHideElement(uniqueValue);
+          } else {
+            this.hideElement(uniqueValue);
+          }
         }
       }
     });
@@ -1011,11 +1014,7 @@ export class MultiStepForm {
     const submitButton = step.querySelector('[ct-form-button="submit"]');
 
     if (prevButton) {
-      if (this.getStepNumber(step) === 1) {
-        this.updateNextButtonOpacity(prevButton, false);
-      } else {
-        this.updateNextButtonOpacity(prevButton, true);
-      }
+      this.updateNextButtonOpacity(prevButton, true);
     }
 
     if (nextButton) {
@@ -1396,28 +1395,28 @@ export class MultiStepForm {
   }
 
   handleSelectFormField(step) {
-    const selectFields = Array.from(
-      step.querySelectorAll("select[ct-form-field]"),
-    );
+    // Find all elements with the ct-form-field attribute
+    const ctFormFields = Array.from(step.querySelectorAll("[ct-form-field]"));
 
-    // Add change event listeners to all select fields with ct-form-field attribute
-    selectFields.forEach((selectField) => {
-      const targetElementId = selectField.getAttribute("ct-form-field");
+    ctFormFields.forEach((element) => {
+      // Use the ct-form-field attribute value to find the corresponding select element
+      const selectName = element.getAttribute("ct-form-field");
+      const selectField = step.querySelector(`select[name="${selectName}"]`);
 
-      if (targetElementId) {
-        const targetElement = document.getElementById(targetElementId);
+      if (selectField) {
+        // Update the ct-form-field element's content with the current selected option value
+        const currentSelectedOption =
+          selectField.options[selectField.selectedIndex];
+        element.textContent = currentSelectedOption
+          ? currentSelectedOption.value
+          : "";
 
-        if (targetElement) {
-          targetElement.textContent = selectField.value;
-
-          // Add event listener for 'change' event on select input
-          selectField.addEventListener("change", function () {
-            // Update the target element's content with the selected option value
-            const selectedOption =
-              selectField.options[selectField.selectedIndex];
-            targetElement.textContent = selectedOption.value;
-          });
-        }
+        // Add event listener for 'change' event on select input
+        selectField.addEventListener("change", function () {
+          // Update the ct-form-field element's content with the new selected option value
+          const selectedOption = selectField.options[selectField.selectedIndex];
+          element.textContent = selectedOption.value;
+        });
       }
     });
   }

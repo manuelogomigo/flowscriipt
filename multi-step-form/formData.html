@@ -41,16 +41,16 @@
 
 
                 <label ct-form-check="showDiv1" ct-form-toggleclass="testClass">
-                    <input type="checkbox" name="check" value="show1" ct-form-check="showdiv" />
+                    <input type="radio" name="check" value="show1" />
                     show1
 
                 </label>
                 <label ct-form-check="showDiv2" ct-form-toggleclass="testClass">
-                    <input type="checkbox" name="check" value="show2" ct-form-check="showdiv" />
+                    <input type="radio" name="check" value="show2" />
                     show2
                 </label>
                 <label ct-form-check="showDiv3" ct-form-toggleclass="testClass">
-                    <input type="checkbox" name="check" value="show3" ct-form-check="showdiv" />
+                    <input type="radio" name="check" value="show3" />
                     show3
                 </label>
 
@@ -62,12 +62,12 @@
                     <p ct-form-hide="showDiv3">Show Div 3</p>
                 </div>
 
-                <select ct-form-field="targetElementId">
+                <select name="targetElementId">
                     <option value="volvo5">Volvo</option>
                     <option value="bmw5">BMW</option>
                 </select>
 
-                <div id="targetElementId">test</div>
+                <div ct-form-field="targetElementId">test</div>
 
 
                 <div class="buttons">
@@ -147,7 +147,7 @@
                     No
                 </label>
 
-                <select name="cars" id="cars">
+                <select name="cars">
                     <option value="volvo">Volvo</option>
                     <option value="saab">Saab</option>
                 </select>
