@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Scroll</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="./script.js" defer></script>
+    <style>
+        body {
+            height: 100vh;
+            
+        }
+        section {
+            padding: 50px;
+            height: 100vh;
+            /* transition: transform 0.5s ease-in-out; */
+        }
+        .is-1 {
+            background-color: red;
+        }
+        .is-2 {
+            background-color: blue;
+        }
+        .is-3 {
+            background-color: purple;
+        }
+    </style>
+</head>
+<body>
+  <!-- <div class="container"> -->
+    <section class="is-1" id="section1" ct-scroll-section>
+      <!-- Content for section 1 -->
+    </section>
+    <section class="is-2" id="section2" ct-scroll-section>
+      <!-- Content for section 2 -->
+    </section>
+    <section class="is-3" id="section3" ct-scroll-section>
+      <!-- Content for section 3 -->
+    </section>
+  <!-- </div> -->
+</body>
+</html>
