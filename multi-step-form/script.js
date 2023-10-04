@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressWrapper = document.querySelector(
     '[ct-form-progress="wrapper"]'
   );
-  const progressLine = document.querySelector('[ct-form-progress="line"]');
-  const percentDisplay = document.querySelector('[ct-form-percent="current"]');
+  // const progressLine = form.querySelector('[ct-form-progress="line"]');
+  // const percentDisplay = document.querySelector('[ct-form-percent="current"]');
   let radioAutoEnabled = false;
   let radioDelay = 1000; // Default delay in milliseconds
 
@@ -36,16 +36,29 @@ document.addEventListener("DOMContentLoaded", function () {
   updateStepNumber(1); // Set the initial current step number
   updateProgressLine(0); // Set the initial progress line width
   updatePercentDisplay(0); // Set the initial current percentage
+  updateAllTotalNumbers(totalSteps);
 
   // Function to scroll to the top of the form
-  function scrollToFormTop() {
-    const form = document.querySelector('[ct-form-mode="multi-step"]');
-    const formPosition = form.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: formPosition,
-      behavior: "smooth" // Use 'auto' for immediate scrolling
-    });
-  }
+  // function scrollToFormTop() {
+  //   const form = document.querySelector('[ct-form-mode="multi-step"]');
+  //   const formContainer = form.parentElement; // Assuming the form is in a container div
+  //   const formPosition =
+  //     formContainer.getBoundingClientRect().top + window.scrollY;
+  //   formContainer.scrollTo({
+  //     top: formPosition,
+  //     behavior: "smooth" // Use 'auto' for immediate scrolling
+  //   });
+  // }
+
+  // // Function to scroll to the top of the form container
+  // function scrollToFormTop() {
+  //   const form = document.querySelector('[ct-form-mode="multi-step"]');
+  //   const formContainer = form.parentElement;
+  //   formContainer.scrollTo({
+  //     top: 0, // Scroll to the top of the form container
+  //     behavior: "smooth" // Use 'auto' for immediate scrolling
+  //   });
+  // }
 
   // Add click event listener to the form
   form.addEventListener("click", function (event) {
@@ -75,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (validateStep(currentStep)) {
         showNextStep(target, currentStep, nextStep);
         handleRadioAutoProgress(nextStep);
-        scrollToFormTop(); // Scroll to the top of the form after showing the next step
       }
     } else if (
       target.matches('button[ct-form-button="prev"]') ||
@@ -84,8 +96,6 @@ document.addEventListener("DOMContentLoaded", function () {
       target.setAttribute("href", "javascript:void(0)");
       const currentStep = target.closest('[ct-form-item="step"]');
       const prevStep = currentStep.previousElementSibling;
-
-      scrollToFormTop(); // Scroll to the top of the form after showing the next step
 
       showPrevStep(target, currentStep, prevStep);
     }
@@ -112,6 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       nextStep.style.transition = "opacity 0.3s ease";
       nextStep.style.opacity = 1; // Show the next step with smooth fade-in effect
+
+      // Scroll to the top of the next step element
+      nextStep.scrollIntoView({
+        behavior: "smooth" // Use 'auto' for immediate scrolling
+      });
 
       // If ct-form-display attribute is present, set the display style for the next step
       const displayAttr = nextStep.getAttribute("ct-form-display");
@@ -143,6 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // Trigger a reflow before applying the opacity transition to avoid animation issues
       prevStep.offsetHeight;
 
+      // Scroll to the top of the prev step element
+      prevStep.scrollIntoView({
+        behavior: "smooth" // Use 'auto' for immediate scrolling
+      });
+
       prevStep.style.transition = "opacity 0.3s ease";
       prevStep.style.opacity = 1; // Show the previous step with smooth fade-in effect
 
@@ -162,35 +182,89 @@ document.addEventListener("DOMContentLoaded", function () {
     return nonCardSteps.indexOf(step) + 1;
   }
 
-  // Update the current step number display
-  function updateStepNumber(stepNumber) {
-    if (currentNumberDisplay) {
-      currentNumberDisplay.textContent = `${stepNumber}`;
-    }
-    if (totalNumberDisplay) {
-      totalNumberDisplay.textContent = `${totalSteps}`;
-    }
+  // // Update the current step number display
+  // function updateStepNumber(stepNumber) {
+  //   if (currentNumberDisplay) {
+  //     currentNumberDisplay.textContent = `${stepNumber}`;
+  //   }
+  //   if (totalNumberDisplay) {
+  //     totalNumberDisplay.textContent = `${totalSteps}`;
+  //   }
+  // }
+
+  // Function to update all elements with ct-form-number="total"
+  function updateAllTotalNumbers(totalSteps) {
+    const totalNumberDisplays = document.querySelectorAll(
+      '[ct-form-number="total"]'
+    );
+    totalNumberDisplays.forEach((totalNumberDisplay) => {
+      if (totalNumberDisplay) {
+        totalNumberDisplay.textContent = `${totalSteps}`;
+      }
+    });
   }
 
-  // Function to update the progress line width smoothly
-  function updateProgressLine(progress) {
-    if (progressLine) {
-      // Add a CSS transition for the width property to achieve the smooth effect
-      progressLine.style.transition = "width 1.2s ease";
-      progressLine.style.width = `${progress * 100}%`;
+  // Function to update all elements with ct-form-number="current"
+  function updateStepNumber(currentStepNumber) {
+    const currentNumberDisplays = document.querySelectorAll(
+      '[ct-form-number="current"]'
+    );
+    currentNumberDisplays.forEach((currentNumberDisplay) => {
+      if (currentNumberDisplay) {
+        currentNumberDisplay.textContent = `${currentStepNumber}`;
+      }
+    });
+  }
 
-      // Wait for the transition to finish, then remove the transition for future updates
-      setTimeout(() => {
-        progressLine.style.transition = "";
-      }, 300);
-    }
+  // Function to update all progress lines' width smoothly
+  function updateProgressLine(progress) {
+    const progressLines = document.querySelectorAll(
+      '[ct-form-progress="line"]'
+    );
+    progressLines.forEach((progressLine) => {
+      if (progressLine) {
+        // Update the width attribute of each progress line element
+        progressLine.style.transition = "width 1.2s ease";
+        progressLine.style.width = `${progress * 100}%`;
+
+        // Wait for the transition to finish, then remove the transition for future updates
+        setTimeout(() => {
+          progressLine.style.transition = "";
+        }, 300);
+      }
+    });
   }
 
   // Update the current percentage display
   function updatePercentDisplay(percentage) {
-    if (percentDisplay) {
-      percentDisplay.textContent = `${Math.round(percentage)}%`;
+    const percentDisplays = document.querySelectorAll(
+      '[ct-form-percent="current"]'
+    );
+    percentDisplays.forEach((percentDisplay) => {
+      if (percentDisplay) {
+        percentDisplay.textContent = `${Math.round(percentage)}%`;
+      }
+    });
+  }
+
+  // Function to validate radio inputs in a step
+  function validateRadioInputs(step) {
+    const radioGroups = Array.from(
+      step.querySelectorAll('input[type="radio"][required]')
+    );
+    // Check each radio group for validation
+    for (const radioGroup of radioGroups) {
+      const groupName = radioGroup.name;
+      const radioButtons = Array.from(
+        step.querySelectorAll(`input[type="radio"][name="${groupName}"]`)
+      );
+      const checked = radioButtons.some((radioButton) => radioButton.checked);
+      if (!checked) {
+        // No radio button in the group is selected
+        return false;
+      }
     }
+    return true; // All radio groups are validated
   }
 
   // Validate the inputs in a step
@@ -213,7 +287,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    return valid && validateCheckboxes(step);
+    // Validate checkboxes
+    valid = valid && validateCheckboxes(step);
+    // Validate radio inputs
+    valid = valid && validateRadioInputs(step);
+    return valid;
   }
 
   // Helper function to validate email format
@@ -253,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (getStepNumber(step) === totalSteps) {
       nextButton.style.display = "none";
     } else {
-      nextButton.style.display = "inherit";
+      nextButton.style.display = "block";
     }
   }
 
@@ -359,25 +437,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const dependentElements = Array.from(
       document.querySelectorAll("[ct-form-dependent]")
     );
+    const selectFields = Array.from(
+      document.querySelectorAll("select[ct-form-conditional]")
+    );
 
-    // Function to show the associated dependentElement
+    // Function to show the associated dependentElements
     function showDependentElement(uniqueValue) {
-      const dependentElement = document.querySelector(
+      const elementsToDisplay = document.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`
       );
-      if (dependentElement) {
-        dependentElement.style.display = "block";
-      }
+      elementsToDisplay.forEach((element) => {
+        element.style.display = "inherit";
+      });
     }
 
-    // Function to hide the associated dependentElement
+    // Function to hide the associated dependentElements
     function hideDependentElement(uniqueValue) {
-      const dependentElement = document.querySelector(
+      const dependentElementsToHide = document.querySelectorAll(
         `[ct-form-dependent="${uniqueValue}"]`
       );
-      if (dependentElement) {
-        dependentElement.style.display = "none";
-      }
+      dependentElementsToHide.forEach((element) => {
+        element.style.display = "none";
+      });
     }
 
     // Hide all elements with ct-form-dependent attribute onload
@@ -421,6 +502,20 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       checkboxInput.addEventListener("change", function () {
         if (checkboxInput.checked) {
+          showDependentElement(uniqueValue);
+        } else {
+          hideDependentElement(uniqueValue);
+        }
+      });
+    });
+
+    // Add change event listeners to all select fields with ct-form-conditional attribute
+    selectFields.forEach((selectField) => {
+      const selectedValue = selectField.value;
+      const uniqueValue = selectField.getAttribute("ct-form-conditional");
+
+      selectField.addEventListener("change", function () {
+        if (selectedValue === uniqueValue) {
           showDependentElement(uniqueValue);
         } else {
           hideDependentElement(uniqueValue);
@@ -585,6 +680,37 @@ document.addEventListener("DOMContentLoaded", function () {
     handleFormField(step);
   });
 
+  // Function to handle ct-form-field for select inputs
+  function handleSelectFormField(step) {
+    const selectFields = Array.from(
+      step.querySelectorAll("select[ct-form-field]")
+    );
+
+    // Add change event listeners to all select fields with ct-form-field attribute
+    selectFields.forEach((selectField) => {
+      const targetElementId = selectField.getAttribute("ct-form-field");
+
+      if (targetElementId) {
+        const targetElement = document.getElementById(targetElementId);
+
+        if (targetElement) {
+          // Add event listener for 'change' event on select input
+          selectField.addEventListener("change", function () {
+            // Update the target element's content with the selected option value
+            const selectedOption =
+              selectField.options[selectField.selectedIndex];
+            targetElement.textContent = selectedOption.value;
+          });
+        }
+      }
+    });
+  }
+
+  // Call the function to handle ct-form-field for select inputs
+  steps.forEach((step) => {
+    handleSelectFormField(step);
+  });
+
   // Function to handle the ct-form-edit-step attribute
   function handleEditStepAttribute(step) {
     const editStepElements = Array.from(
@@ -647,3 +773,4 @@ document.addEventListener("DOMContentLoaded", function () {
     handleRadioAutoProgress(currentStep);
   }
 });
+
