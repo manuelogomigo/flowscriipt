@@ -70,6 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
         
             tooltipElement.style.top = `${top}px`;
             tooltipElement.style.left = `${left}px`;
+            tooltipElement.style.position = `absolute`;
+            tooltipElement.style.backgroundColor = `#333`;
+            tooltipElement.style.color = `#fff`;
+            tooltipElement.style.padding = `8px`;
+            tooltipElement.style.borderRadius = `2px`;
+            tooltipElement.style.zIndex = `1`;
         }
     }
 
