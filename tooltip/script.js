@@ -24,43 +24,66 @@ document.addEventListener("DOMContentLoaded", function () {
     
         document.body.appendChild(tooltipElement);
     
-        const rect = element.getBoundingClientRect();
-        const tooltipRect = tooltipElement.getBoundingClientRect();
+        element.tooltipElement = tooltipElement;
     
-        let top, left
-        
-        switch (options.position) {
-            case "top":
-                top = rect.top - tooltipRect.height;
-                left = rect.left;
-                break;
-            case "bottom":
-                top = rect.bottom;
-                left = rect.left;
-                break;
-            case "right":
-                top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-                left = rect.right
-                break;
-            case "left":
-                top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-                left = rect.left
-                break;
-            default:
-                top = rect.bottom
-                left = rect.left
-                break;
-        }
-    
-        tooltipElement.style.top = `${top}px`;
-        tooltipElement.style.left = `${left}px`;
+        updateTooltipPosition(element, options);
     }
   
     function hideTooltip(element) {
-        const tooltipElement = document.querySelector(".tooltip");
+        const tooltipElement = element.tooltipElement;
         if (tooltipElement) {
             document.body.removeChild(tooltipElement);
+            delete element.tooltipElement;
         }
     }
-  });
-  
+
+    function updateTooltipPosition(element, options = {}) {
+        const tooltipElement = element.tooltipElement;
+        if (tooltipElement) {
+            const rect = element.getBoundingClientRect();
+            const tooltipRect = tooltipElement.getBoundingClientRect();
+        
+            let top, left
+            
+            switch (options.position) {
+                case "top":
+                    top = rect.top - tooltipRect.height;
+                    left = rect.left;
+                    break;
+                case "bottom":
+                    top = rect.bottom;
+                    left = rect.left;
+                    break;
+                case "right":
+                    top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+                    left = rect.right
+                    break;
+                case "left":
+                    top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+                    left = rect.left
+                    break;
+                default:
+                    top = rect.bottom
+                    left = rect.left
+                    break;
+            }
+        
+            tooltipElement.style.top = `${top}px`;
+            tooltipElement.style.left = `${left}px`;
+        }
+    }
+
+    window.addEventListener("resize", function () {
+        tooltips.forEach((tooltip) => {
+            const position = tooltip.getAttribute("data-tooltip-position") || defaultOptions.position;
+            updateTooltipPosition(tooltip, { position });
+        });
+    });
+
+    window.addEventListener("scroll", function () {
+        tooltips.forEach((tooltip) => {
+            const position = tooltip.getAttribute("data-tooltip-position") || defaultOptions.position;
+            updateTooltipPosition(tooltip, { position });
+        });
+    });
+});
