@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
     tooltips.forEach((tooltip) => {
       tooltip.addEventListener("mouseenter", function () {
-        const tooltipText = this.getAttribute("data-tooltip");
+        const tooltipText = tooltip.textContent;
         const position = this.getAttribute("data-tooltip-position") || defaultOptions.position;
         showTooltip(this, tooltipText, { position });
       });
