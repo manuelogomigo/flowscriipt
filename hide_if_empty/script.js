@@ -7,3 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     })
 });
+
+// HOW TO USE
+// After importing, the attribute "data-hide" is added to the element that user chooses to hide if empty. If the said element contains a value, nothing happens, if it doesn't, the entire element gets hidden
