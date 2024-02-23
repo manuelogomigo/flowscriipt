@@ -1,4 +1,6 @@
 *.env
 node_modules
 serviceAccountKey.json
+index.html
+index
 ```
