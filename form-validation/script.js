@@ -57,4 +57,20 @@ function validateURL() {
     }
     urlInput.reportValidity();
     return urlInput.checkValidity();
-}  
+}
+
+function validateForm() {
+    let form = document.querySelector("form");
+    let nameValid = validateName();
+    let emailValid = validateEmail();
+    let passwordValid = validatePassword();
+    let urlValid = validateURL();
+    if (nameValid && emailValid && passwordValid && urlValid) {
+      form.setCustomValidity("");
+      return true;
+    } else {
+      form.setCustomValidity("Please fix the errors in the form");
+      form.reportValidity();
+      return false;
+    }
+  }
