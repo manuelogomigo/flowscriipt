@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     elements.forEach((element) => {
         if (element.innerHTML.trim() == "") {
-            element.style.display = "none";
+            element.remove();
         }
     })
 });
