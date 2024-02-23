@@ -28,3 +28,19 @@ function validateEmail() {
     return emailInput.checkValidity();
 }
 
+function validatePassword() {
+    let passwordInput = document.querySelector("[name='password]");
+    let passwordValue = passwordInput.value.trim();
+    console.log("hi: ", passwordValue);
+    let passwordPattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}";
+    if (passwordValue === "") {
+        passwordInput.setCustomValidity("Password cannot be blank");
+    } else if (!passwordPattern.test(passwordValue)) {
+        passwordInput.setCustomValidity("Password must have at least 6 characters, including a number and a capital letter");
+    } else {
+        passwordInput.setCustomValidity("");
+    }
+    passwordInput.reportValidity();
+    return passwordInput.checkValidity();
+}
+
