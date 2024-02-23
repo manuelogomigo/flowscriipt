@@ -44,3 +44,17 @@ function validatePassword() {
     return passwordInput.checkValidity();
 }
 
+function validateURL() {
+    let urlInput = document.querySelector("[url]");
+    let urlValue = urlInput.value.trim();
+    let urlPattern = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}(\/\S*)?$/;
+    if (urlValue === "") {
+        urlInput.setCustomValidity("URL cannot be blank");
+    } else if (!urlPattern.test(urlValue)) {
+        urlInput.setCustomValidity("Please enter a valid URL");
+    } else {
+        urlInput.setCustomValidity("");
+    }
+    urlInput.reportValidity();
+    return urlInput.checkValidity();
+}  
