@@ -7,7 +7,6 @@ function verifyAge() {
         const url = element.getAttribute("data-url");
 
         const dobDate = new Date(dob);
-        console.log(dob);
 
         if (isNaN(dobDate.getTime())) {
             alert("Please enter a valid date of birth");
