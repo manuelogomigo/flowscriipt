@@ -1,24 +1,31 @@
 function verifyAge() {
-    const dob = document.getElementById("dob").value;
+    const elements = document.querySelectorAll("[data-dob]");
+    elements.forEach((element) => {
+        const dob = element.value;
 
-    const dobDate = new Date(dob);
+        const minAge = element.getAttribute("data-age");
+        const url = element.getAttribute("data-url");
 
-    if (isNaN(dobDate.getTime())) {
-        alert("Please enter a valid date of birth");
-        return;
-    }
+        const dobDate = new Date(dob);
+        console.log(dob);
 
-    const today = new Date();
-    const age = today.getFullYear() - dobDate.getFullYear();
+        if (isNaN(dobDate.getTime())) {
+            alert("Please enter a valid date of birth");
+            return;
+        }
 
-    if (today.getMonth() < dobDate.getMonth() || (today.getMonth() == dobDate.getMonth() && today.getDate() < dobDate.getDate())) {
-        age--;
-    }
+        const today = new Date();
+        const age = today.getFullYear() - dobDate.getFullYear();
 
-    const minAge = 18;
-    if (age >= minAge) {
-        window.location.href = "https://google.com";
-    } else {
-        alert("You are not old enough to access this service");
-    }
+        if (today.getMonth() < dobDate.getMonth() || (today.getMonth() == dobDate.getMonth() && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+
+        if (age >= minAge) {
+            window.location.href = `https://${url}`;
+        } else {
+            alert("You are not old enough to access this service");
+        }   
+    })
 }
+
