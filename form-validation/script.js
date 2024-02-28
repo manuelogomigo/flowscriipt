@@ -2,7 +2,6 @@ function validateName() {
     let nameInput = document.querySelector("[data-name]");
     let nameError = document.querySelector("[data-name-error]")
     let nameValue = nameInput.value.trim();
-    console.log("name: ", nameValue)
     let namePattern = /^[a-zA-Z]+$/;
     if (nameValue === "") {
         nameError.style.display = "block";
@@ -61,18 +60,26 @@ function validatePassword() {
 }
 
 function validateURL() {
-    let urlInput = document.querySelector("[url]");
+    let urlInput = document.querySelector("[data-url]");
+    let urlError = document.querySelector("[data-url-error]");
     let urlValue = urlInput.value.trim();
-    let urlPattern = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}(\/\S*)?$/;
+    let urlPattern = /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/g;
+
     if (urlValue === "") {
-        urlInput.setCustomValidity("URL cannot be blank");
+        urlError.style.display = "block";
+        urlError.textContent = "URL cannot be empty";
+        urlError.style.color = "red";
+        urlError.style.fontSize = "14px";
+        return false;
     } else if (!urlPattern.test(urlValue)) {
-        urlInput.setCustomValidity("Please enter a valid URL");
+        urlError.style.display = "block";
+        urlError.textContent = "Please enter a valid URL, e.g flowscriipt.com";
+        urlError.style.color = "red";
+        urlError.style.fontSize = "14px";
+        return false;
     } else {
-        urlInput.setCustomValidity("");
+        return true;
     }
-    urlInput.reportValidity();
-    return urlInput.checkValidity();
 }
 
 function validateForm() {
