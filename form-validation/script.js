@@ -44,19 +44,26 @@ function validateEmail() {
 }
 
 function validatePassword() {
-    let passwordInput = document.querySelector("[name='password]");
+    let passwordInput = document.querySelector("[data-password]");
+    let passwordError = document.querySelector("[data-password-error]");
     let passwordValue = passwordInput.value.trim();
-    console.log("hi: ", passwordValue);
-    let passwordPattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}";
+    // let passwordPattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}";
+    let passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
     if (passwordValue === "") {
-        passwordInput.setCustomValidity("Password cannot be blank");
+        passwordError.style.display = "block";
+        passwordError.textContent = "Password cannot be blank";
+        passwordError.style.color = "red";
+        passwordError.style.fontSize = "14px";
+        return false;
     } else if (!passwordPattern.test(passwordValue)) {
-        passwordInput.setCustomValidity("Password must have at least 6 characters, including a number and a capital letter");
+        passwordError.style.display = "block";
+        passwordError.textContent = "Password must have at least 6 characters, including a number and a capital letter";
+        passwordError.style.color = "red";
+        passwordError.style.fontSize = "14px";
+        return false;
     } else {
-        passwordInput.setCustomValidity("");
+        return true;
     }
-    passwordInput.reportValidity();
-    return passwordInput.checkValidity();
 }
 
 function validateURL() {
