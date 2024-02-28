@@ -16,6 +16,7 @@ function validateName() {
         nameError.style.fontSize = "14px"
         return false;
     } else {
+        nameError.textContent = "";
         return true;
     }
 }
@@ -62,6 +63,7 @@ function validatePassword() {
         passwordError.style.fontSize = "14px";
         return false;
     } else {
+        passwordError.textContent = "";
         return true;
     }
 }
@@ -85,6 +87,7 @@ function validateURL() {
         urlError.style.fontSize = "14px";
         return false;
     } else {
+        urlError.textContent = "";
         return true;
     }
 }
