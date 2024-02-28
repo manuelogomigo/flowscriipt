@@ -1,6 +1,6 @@
 function validateName() {
-    let nameInput = document.querySelector("[name]");
-    let nameError = document.querySelector("[name-error]")
+    let nameInput = document.querySelector("[data-name]");
+    let nameError = document.querySelector("[data-name-error]")
     let nameValue = nameInput.value.trim();
     console.log("name: ", nameValue)
     let namePattern = /^[a-zA-Z]+$/;
@@ -8,32 +8,40 @@ function validateName() {
         nameError.style.display = "block";
         nameError.textContent = "Name cannot be blank";
         nameError.style.color = "red";
+        nameError.style.fontSize = "14px"
         return false
     } else if (!namePattern.test(nameValue)) {
+        nameError.style.display = "block";
         nameError.textContent = "Name must only have alphabetic characters";
         nameError.style.color = "red";
-        nameInput.focus();
+        nameError.style.fontSize = "14px"
         return false;
     } else {
-        nameError.textContent = "";
-        nameError.style.color = "red";
         return true;
     }
 }
 
 function validateEmail() {
-    let emailInput = document.querySelector("[email]");
+    let emailInput = document.querySelector("[data-email]");
+    let emailError = document.querySelector("[data-email-error");
     let emailValue = emailInput.value.trim();
     let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (emailValue === "") {
-        emailInput.setCustomValidity("Email cannot be blank");
+        emailError.style.display = "block";
+        emailError.textContent = "Email cannot be blank";
+        emailError.style.color = "red";
+        emailError.style.fontSize = "14px"
+        return false;
     } else if (!emailPattern.test(emailValue)) {
-        emailInput.setCustomValidity("Please enter a valid email address");
+        emailError.style.display = "block";
+        emailError.textContent="Please enter a valid email, e.g flowscript@gmail.com";
+        emailError.style.color = "red";
+        emailError.style.fontSize = "14px"
+        return false;
     } else {
-        emailInput.setCustomValidity("");
+        emailError.textContent = "";
+        return true;
     }
-    emailInput.reportValidity();
-    return emailInput.checkValidity();
 }
 
 function validatePassword() {
