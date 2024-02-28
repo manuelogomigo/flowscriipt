@@ -1,16 +1,24 @@
 function validateName() {
     let nameInput = document.querySelector("[name]");
+    let nameError = document.querySelector("[name-error]")
     let nameValue = nameInput.value.trim();
+    console.log("name: ", nameValue)
     let namePattern = /^[a-zA-Z]+$/;
     if (nameValue === "") {
-        nameInput.setCustomValidity("Name cannot be blank");
+        nameError.style.display = "block";
+        nameError.textContent = "Name cannot be blank";
+        nameError.style.color = "red";
+        return false
     } else if (!namePattern.test(nameValue)) {
-        nameInput.setCustomValidity("Name must have only alphabetic characters");
+        nameError.textContent = "Name must only have alphabetic characters";
+        nameError.style.color = "red";
+        nameInput.focus();
+        return false;
     } else {
-        nameInput.setCustomValidity("");
+        nameError.textContent = "";
+        nameError.style.color = "red";
+        return true;
     }
-    nameInput.reportValidity();
-    return nameInput.checkValidity();
 }
 
 function validateEmail() {
